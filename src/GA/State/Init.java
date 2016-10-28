@@ -9,10 +9,6 @@ import org.newdawn.slick.opengl.Texture;
 import static GA.Gfx.Helper.Artist.drawRectTexture;
 import static GA.Gfx.Helper.Artist.quickLoadTexture;
 
-/**
- *
- * @author Vovaxs
- */
 public class Init implements State {
 
     private Texture background;
@@ -39,11 +35,10 @@ public class Init implements State {
     private void updateButtons() {
         if (Mouse.isButtonDown(0) && !LMBisDown) {
             if (this.menuHUD.isButtonClicked("start")) {
-                this.stateManager.changeState(new Spectating());
+                this.stateManager.changeToSpectatingState();
             }
             if (this.menuHUD.isButtonClicked("map editor")) {
-                //this.stateManager.changeState(new LevelEditor());
-                System.out.println("Change state to option 2");
+                this.stateManager.changeToMapEditState();
             }
             if (this.menuHUD.isButtonClicked("exit")) {
                 System.exit(0);

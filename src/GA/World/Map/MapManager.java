@@ -8,8 +8,8 @@ import java.util.logging.Logger;
 
 public class MapManager {
 
-    public static final String MAIN_MAP = "mainMap";
-    public static final String DEFAULT_MAP = "defaultMap";
+    public static final String MAIN_MAP = "mainMap.MAP";
+    public static final String DEFAULT_MAP = "defaultMap.MAP";
     private static String DEFAULT_FILE_PATH = "res" + File.separator + "maps" + File.separator;
     private static BufferedReader bufferedReader;
 
@@ -23,10 +23,12 @@ public class MapManager {
 
     public static void saveMap(Map map) {
         String mapData = "";
-        for (int i = 0; i < map.getMapWidth(); i++) {
-            for (int j = 0; j < map.getMapHeight(); j++) {
-                mapData += TileType.extractTileID(map.getTile(i, j));
-                mapData += map.getTile(i, j).getAngleID();
+        for (int i = 0; i < map.getMapHeight(); i++) {
+            for (int j = 0; j < map.getMapWidth(); j++) {
+                mapData += TileType.extractTileID(map.getTile(j, i));
+                if(j == map.getMapWidth() - 1 && i < map.getMapHeight() - 1){
+                    mapData += "\n";
+                }
             }
         }
 
@@ -42,25 +44,32 @@ public class MapManager {
     }
 
     public static Map loadMainMap() {
-        return loadMap(MAIN_MAP);
+        return loadMap(MAIN_MAP, true);
     }
 
     public static Map loadDefaultMap() {
-        return loadMap(DEFAULT_MAP);
+        return loadMap(DEFAULT_MAP, false);
     }
 
-    private static Map loadMap(String mapName) {
+    private static Map loadMap(String mapName, boolean first) {
         Map map = new Map();
+        String data = "";
+        String line;
         try {
             bufferedReader = new BufferedReader(new FileReader(DEFAULT_FILE_PATH + mapName));
-            String data = bufferedReader.readLine();
-            for (int x = 0; x < map.getMapWidth(); x++) {
-                for (int y = 0; y < map.getMapHeight(); y++) {
-                    map.setTile(x, y, TileType.extractTileType(data.substring((x * 2) * map.getMapHeight() + (y * 2), (x * 2) * map.getMapHeight() + (y * 2) + 1)), data.substring((x * 2) * map.getMapHeight() + (y * 2) + 1, (x * 2) * map.getMapHeight() + (y * 2) + 2));
-                }
+            while ( (line = bufferedReader.readLine()) != null){
+                data += line;
             }
         } catch (Exception e) {
-            System.out.println("Map does not exist! Loading default map");
+            if (first) {
+                loadDefaultMap();
+            }
+            System.out.println("Map does not exist! Generating default map");
+        }
+        for (int y = 0; y < map.getMapHeight(); y++) {
+            for (int x = 0; x < map.getMapWidth(); x++) {
+                map.setTile(x, y, TileType.extractTileType(data.substring(y * map.getMapWidth() + x, y * map.getMapWidth() + x + 1)));
+            }
         }
         return map;
     }

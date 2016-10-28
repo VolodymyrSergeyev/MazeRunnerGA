@@ -11,5 +11,4 @@ public interface State {
     public void update();
 
     public boolean isInitialized();
-    
 }

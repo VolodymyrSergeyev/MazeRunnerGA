@@ -49,13 +49,25 @@ public class Map {
                         map[i][j] = new Tile(i * blockSize, j * blockSize,
                                 blockSize, blockSize, TileType.Wall);
                         break;
+                    case 2:
+                        map[i][j] = new Tile(i * blockSize, j * blockSize,
+                                blockSize, blockSize, TileType.RunnerSpawn);
+                        break;
+                    case 3:
+                        map[i][j] = new Tile(i * blockSize, j * blockSize,
+                                blockSize, blockSize, TileType.GhostSpawn);
+                        break;
+                    case 4:
+                        map[i][j] = new Tile(i * blockSize, j * blockSize,
+                                blockSize, blockSize, TileType.Food);
+                        break;
                 }
             }
         }
     }
 
-    public void setTile(int xCoord, int yCoord, TileType type, String angleID) {
-        map[xCoord][yCoord] = new Tile((int) (xCoord * this.blockSize), (int) (yCoord * this.blockSize), this.blockSize, this.blockSize, type, angleID);
+    public void setTile(int xCoord, int yCoord, TileType type) {
+        map[xCoord][yCoord] = new Tile((int) (xCoord * this.blockSize), (int) (yCoord * this.blockSize), this.blockSize, this.blockSize, type);
     }
 
     public void setUnbuildable(int xCoord, int yCoord) {

@@ -3,7 +3,7 @@ package GA.World.Entity;
 
 public enum TileType {
 
-    Wall("wall", false, "0"), Floor("floor", true, "1");
+    Wall("wall", false, "1"), Floor("floor", true, "0"), RunnerSpawn("rs", true, "2"), GhostSpawn("gs", true, "3"), Food("food", true, "4");
 
     private String textureName;
     private boolean buildable;
