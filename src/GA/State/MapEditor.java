@@ -1,6 +1,7 @@
 package GA.State;
 
-import GA.World.Entity.TileType;
+import GA.World.Logger.Logger;
+import GA.World.Map.Element.TileType;
 import GA.World.Map.Map;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -22,8 +23,8 @@ public class MapEditor implements State {
     }
 
     @Override
-    public void init() {
-        this.map = loadMainMap();
+    public void init(Logger logger, Map map) {
+        this.map = map;
         this.types = new TileType[5];
         this.types[0] = TileType.Floor;
         this.types[1] = TileType.Wall;
@@ -33,6 +34,7 @@ public class MapEditor implements State {
         this.angleID = "0";
         this.index = 0;
         this.tempI = 0;
+        this.map.initRendering();
         this.initialized = true;
     }
 
@@ -72,7 +74,7 @@ public class MapEditor implements State {
 
     private void setTile() {
         if (isInWindow()) {
-            map.setTile((int) Math.floor(Mouse.getX() / (map.getBlockSize() * map.getSCALE())), (int) Math.floor((map.getFrameHeight() - Mouse.getY() - 1) / (map.getBlockSize() * map.getSCALE())), types[index]);
+            map.setTile((int) Math.floor(Mouse.getX() / (map.getBlockSize() * map.getSCALE())), (int) Math.floor((map.getFrameHeight() - Mouse.getY() - 1) / (map.getBlockSize() * map.getSCALE())), types[index], true);
         }
     }
 

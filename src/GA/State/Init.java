@@ -3,6 +3,8 @@ package GA.State;
 
 import GA.Gfx.HUD;
 import GA.Gfx.Window;
+import GA.World.Logger.Logger;
+import GA.World.Map.Map;
 import org.lwjgl.input.Mouse;
 import org.newdawn.slick.opengl.Texture;
 
@@ -17,13 +19,13 @@ public class Init implements State {
     
     private boolean LMBisDown;
     private boolean initialized = false;
-    
+
     public Init(StateManager stateManager) {
         this.stateManager = stateManager;
     }
     
     @Override
-    public void init() {
+    public void init(Logger logger, Map map) {
         this.background = quickLoadTexture("bk");
         this.menuHUD = new HUD();
         this.menuHUD.addButton("start", "start", Window.WIDTH / 2 - 130, (int) (Window.HEIGHT * 0.45f));

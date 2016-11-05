@@ -1,6 +1,7 @@
 package GA.World.Map;
 
-import GA.World.Entity.TileType;
+import GA.World.Map.Element.Tile;
+import GA.World.Map.Element.TileType;
 
 import java.io.*;
 import java.util.logging.Logger;
@@ -55,6 +56,7 @@ public class MapManager {
         Map map = new Map();
         String data = "";
         String line;
+        int maxFood = 0;
         try {
             bufferedReader = new BufferedReader(new FileReader(DEFAULT_FILE_PATH + mapName));
             while ( (line = bufferedReader.readLine()) != null){
@@ -63,14 +65,30 @@ public class MapManager {
         } catch (Exception e) {
             if (first) {
                 loadDefaultMap();
+            } else {
+                System.out.println("Map does not exist! Generating default map");
             }
-            System.out.println("Map does not exist! Generating default map");
         }
         for (int y = 0; y < map.getMapHeight(); y++) {
             for (int x = 0; x < map.getMapWidth(); x++) {
-                map.setTile(x, y, TileType.extractTileType(data.substring(y * map.getMapWidth() + x, y * map.getMapWidth() + x + 1)));
+                TileType type = TileType.extractTileType(data.substring(y * map.getMapWidth() + x, y * map.getMapWidth() + x + 1));
+                if(type == TileType.RunnerSpawn){
+                    Tile tmp = new Tile(x, y, map.getBlockSize(), map.getBlockSize(), type);
+                    map.setRunnerSpawn(tmp);
+                    map.setCurrentRunnerTile(tmp);
+                }
+                if(type == TileType.GhostSpawn){
+                    Tile tmp = new Tile(x, y, map.getBlockSize(), map.getBlockSize(), type);
+                    map.setGhostSpawn(tmp);
+                    map.setCurrentGhostTile(tmp);
+                }
+                if(type == TileType.Food){
+                    maxFood++;
+                }
+                map.setTile(x, y, type, false);
             }
         }
+        map.setMaxFood(maxFood);
         return map;
     }
 }
