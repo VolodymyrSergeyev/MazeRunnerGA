@@ -1,15 +1,13 @@
 package GA.State;
 
-/**
- *
- * @author Vovaxs
- */
+import GA.World.Logger.Logger;
+import GA.World.Map.Map;
+
 public interface State {
     
-    public void init();
+    public void init(Logger logger, Map map);
 
     public void update();
 
     public boolean isInitialized();
-    
 }

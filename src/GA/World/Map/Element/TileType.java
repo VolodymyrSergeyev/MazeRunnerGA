@@ -1,17 +1,17 @@
-package GA.World.Entity;
+package GA.World.Map.Element;
 
 
 public enum TileType {
 
-    Wall("wall", false, "0"), Floor("floor", true, "1");
+    Wall("wall", false, "1"), Floor("floor", true, "0"), RunnerSpawn("rs", true, "2"), GhostSpawn("gs", true, "3"), Food("food", true, "4");
 
     private String textureName;
-    private boolean buildable;
+    private boolean walkable;
     private String id;
 
-    TileType(String textureName, boolean buildable, String id) {
+    TileType(String textureName, boolean walkable, String id) {
         this.textureName = textureName;
-        this.buildable = buildable;
+        this.walkable = walkable;
         this.id = id;
     }
 
@@ -47,12 +47,12 @@ public enum TileType {
         this.textureName = textureName;
     }
 
-    public boolean isBuildable() {
-        return buildable;
+    public boolean isWalkable() {
+        return walkable;
     }
 
-    public void setBuildable(boolean buildable) {
-        this.buildable = buildable;
+    public void setWalkable(boolean walkable) {
+        this.walkable = walkable;
     }
 
     public String getId() {

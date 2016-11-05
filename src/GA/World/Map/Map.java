@@ -1,8 +1,8 @@
 package GA.World.Map;
 
 import GA.Gfx.Window;
-import GA.World.Entity.Tile;
-import GA.World.Entity.TileType;
+import GA.World.Map.Element.Tile;
+import GA.World.Map.Element.TileType;
 
 public class Map {
     private int blockSize = 16;
@@ -12,13 +12,33 @@ public class Map {
     private int frameHeight;
     private float SCALE;
 
+    private Tile runnerSpawn;
+    private Tile ghostSpawn;
+
+    private Tile currentRunnerTile;
+    private Tile currentGhostTile;
+
     public Tile[][] map;
 
+    private int maxFood = 0;
+
+    public Map(final Map map) {
+        this.frameWidth = map.getFrameWidth();
+        this.frameHeight = map.getMapHeight();
+        this.SCALE = map.getSCALE();
+        this.map = getMapClone(map.getMap());
+        this.runnerSpawn = map.getRunnerSpawn();
+        this.ghostSpawn = map.getGhostSpawn();
+        this.currentRunnerTile = map.getCurrentRunnerTile();
+        this.currentGhostTile = map.getCurrentGhostTile();
+        this.maxFood = map.getMaxFood();
+    }
+
     public Map() {
-        frameWidth = Window.getWIDTH();
-        frameHeight = Window.getHEIGHT();
+        this.frameWidth = Window.getWIDTH();
+        this.frameHeight = Window.getHEIGHT();
         this.SCALE = Window.getSCALE();
-        map = new Tile[mapWidth][mapHeight];
+        this.map = new Tile[mapWidth][mapHeight];
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
                 map[i][j] = new Tile(i * blockSize, j * blockSize, blockSize,
@@ -28,34 +48,79 @@ public class Map {
     }
 
     public Map(int[][] newMap) {
-        frameWidth = Window.getWIDTH();
-        frameHeight = Window.getHEIGHT();
+        this.frameWidth = Window.getWIDTH();
+        this.frameHeight = Window.getHEIGHT();
         this.SCALE = Window.getSCALE();
-        map = new Tile[mapWidth][mapHeight];
-        for (int i = 0; i < map.length; i++) {
-            for (int j = 0; j < map[i].length; j++) {
+        this.map = new Tile[mapWidth][mapHeight];
+        Tile tmp;
+        for (int i = 0; i < this.map.length; i++) {
+            for (int j = 0; j < this.map[i].length; j++) {
                 if (newMap[j][i] == 0) {
 
                 } else {
-                    map[i][j] = new Tile(i * blockSize, j * blockSize,
-                            blockSize, blockSize, TileType.Floor);
-                }
-                switch (newMap[j][i]) {
-                    case 0:
-                        map[i][j] = new Tile(i * blockSize, j * blockSize,
-                                blockSize, blockSize, TileType.Floor);
-                        break;
-                    case 1:
-                        map[i][j] = new Tile(i * blockSize, j * blockSize,
-                                blockSize, blockSize, TileType.Wall);
-                        break;
+                    switch (newMap[j][i]) {
+                        case 0:
+                            this.map[i][j] = new Tile(i * blockSize, j * blockSize,
+                                    blockSize, blockSize, TileType.Floor);
+                            break;
+                        case 1:
+                            this.map[i][j] = new Tile(i * blockSize, j * blockSize,
+                                    blockSize, blockSize, TileType.Wall);
+                            break;
+                        case 2:
+                            tmp = new Tile(i * blockSize, j * blockSize,
+                                    blockSize, blockSize, TileType.RunnerSpawn);
+                            this.map[i][j] = tmp;
+                            this.runnerSpawn = tmp;
+                            break;
+                        case 3:
+                            tmp = new Tile(i * blockSize, j * blockSize,
+                                    blockSize, blockSize, TileType.GhostSpawn);
+                            this.map[i][j] = tmp;
+                            this.ghostSpawn = tmp;
+                            break;
+                        case 4:
+                            this.map[i][j] = new Tile(i * blockSize, j * blockSize,
+                                    blockSize, blockSize, TileType.Food);
+                            this.maxFood++;
+                            break;
+                    }
                 }
             }
         }
     }
 
-    public void setTile(int xCoord, int yCoord, TileType type, String angleID) {
-        map[xCoord][yCoord] = new Tile((int) (xCoord * this.blockSize), (int) (yCoord * this.blockSize), this.blockSize, this.blockSize, type, angleID);
+    public Map(Tile[][] map) {
+        this.frameWidth = Window.getWIDTH();
+        this.frameHeight = Window.getHEIGHT();
+        this.SCALE = Window.getSCALE();
+        this.map = (Tile[][]) map.clone();
+        int count = 0;
+        for(Tile[] tiles : map){
+            for (Tile t: tiles){
+                TileType tType = t.getType();
+                if(tType == TileType.RunnerSpawn){
+                    this.runnerSpawn = t;
+                    this.currentRunnerTile = t;
+                }
+                if(tType == TileType.GhostSpawn){
+                    this.ghostSpawn = t;
+                    this.currentGhostTile = t;
+                }
+                if(tType == TileType.Food){
+                    count++;
+                }
+            }
+        }
+        this.maxFood = count;
+    }
+
+    public void setTile(int xCoord, int yCoord, TileType type, boolean initRender) {
+        Tile tile = new Tile((int) (xCoord * this.blockSize), (int) (yCoord * this.blockSize), this.blockSize, this.blockSize, type);
+        map[xCoord][yCoord] = tile;
+        if(initRender){
+            tile.initTexture();
+        }
     }
 
     public void setUnbuildable(int xCoord, int yCoord) {
@@ -67,6 +132,14 @@ public class Map {
             return map[xPos][yPos];
         } else {
             return new Tile(0, 0, 0, 0, TileType.Wall);
+        }
+    }
+
+    public void initRendering(){
+        for(Tile[] map1 : map){
+            for (Tile t : map1){
+                t.initTexture();
+            }
         }
     }
 
@@ -128,5 +201,55 @@ public class Map {
 
     public float getSCALE() {
         return SCALE;
+    }
+
+    public Tile getRunnerSpawn() {
+        return runnerSpawn;
+    }
+
+    public void setRunnerSpawn(Tile runnerSpawn) {
+        this.runnerSpawn = runnerSpawn;
+    }
+
+    public Tile getGhostSpawn() {
+        return ghostSpawn;
+    }
+
+    public void setGhostSpawn(Tile ghostSpawn){
+        this.ghostSpawn = ghostSpawn;
+    }
+
+    public Tile getCurrentRunnerTile() {
+        return currentRunnerTile;
+    }
+
+    public void setCurrentRunnerTile(Tile currentRunnerTile) {
+        this.currentRunnerTile = currentRunnerTile;
+    }
+
+    public Tile getCurrentGhostTile() {
+        return currentGhostTile;
+    }
+
+    public void setCurrentGhostTile(Tile currentGhostTile) {
+        this.currentGhostTile = currentGhostTile;
+    }
+
+    public int getMaxFood() {
+        return maxFood;
+    }
+
+    public void setMaxFood(int maxFood) {
+        this.maxFood = maxFood;
+    }
+
+    public Tile[][] getMapClone(Tile[][] map) {
+        Tile[][] mapClone = new Tile[this.mapWidth][this.mapHeight];
+        for(int x =0; x < this.mapWidth; x++){
+            for(int y = 0; y < this.mapHeight; y++){
+                mapClone[x][y] = (map[x][y]).getCopy();
+            }
+        }
+        return mapClone;
     }
 }

@@ -1,4 +1,4 @@
-package GA.World.Entity;
+package GA.World.Map.Element;
 
 import GA.Gfx.Window;
 import org.newdawn.slick.opengl.Texture;
@@ -20,7 +20,7 @@ public class Tile {
     private final float SCALE;
     private String angleID;
     private final int[] angleTypes;
-    private boolean isBuildable;
+    private boolean isWalkable;
 
     public Tile(int x, int y, int width, int height, TileType type) {
         this.x = x;
@@ -28,7 +28,6 @@ public class Tile {
         this.width = width;
         this.height = height;
         this.type = type;
-        this.texture = quickLoadTexture(type.getTextureName());
         this.SCALE = Window.getSCALE();
         this.angleTypes = new int[4];
         this.angleTypes[0] = 0;
@@ -36,7 +35,7 @@ public class Tile {
         this.angleTypes[2] = 180;
         this.angleTypes[3] = 270;
         this.angleID = "0";
-        this.isBuildable = type.isBuildable();
+        this.isWalkable = type.isWalkable();
     }
 
     public Tile(int x, int y, int width, int height, TileType type, String angleID) {
@@ -45,7 +44,6 @@ public class Tile {
         this.width = width;
         this.height = height;
         this.type = type;
-        this.texture = quickLoadTexture(type.getTextureName());
         this.SCALE = Window.getSCALE();
         this.angleTypes = new int[4];
         this.angleTypes[0] = 0;
@@ -53,16 +51,19 @@ public class Tile {
         this.angleTypes[2] = 180;
         this.angleTypes[3] = 270;
         this.angleID = angleID;
-        this.isBuildable = type.isBuildable();
-
+        this.isWalkable = type.isWalkable();
     }
 
-    public boolean isBuildable() {
-        return isBuildable;
+    public void initTexture(){
+        this.texture = quickLoadTexture(type.getTextureName());
+    }
+
+    public boolean isWalkable() {
+        return isWalkable;
     }
 
     public void setBuildable(boolean isBuildable) {
-        this.isBuildable = isBuildable;
+        this.isWalkable = isBuildable;
     }
 
     public void draw() {
@@ -73,16 +74,12 @@ public class Tile {
         return x;
     }
 
-    public int getXPos() {
-        return (int) x / 32;
+    public Tile getCopy(){
+        return new Tile((int)this.x, (int)this.y, (int)this.width, (int)this.height, this.type);
     }
 
     public void setX(float x) {
         this.x = x;
-    }
-
-    public int getYPos() {
-        return (int) y / 32;
     }
 
     public float getY() {
