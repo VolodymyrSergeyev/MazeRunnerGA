@@ -54,6 +54,13 @@ public class Spectating implements State {
                 this.changeCurrentGenerationToBestGenome();
             }
 
+            if (Keyboard.getEventKey() == Keyboard.KEY_D && Keyboard.getEventKeyState()) {
+                Genome genome = this.logger.getDebugGenome();
+                if (genome != null) {
+                    this.applyGenomeToRenderedRunner(genome);
+                }
+            }
+
             if (Keyboard.getEventKey() == Keyboard.KEY_W && Keyboard.getEventKeyState()) {
                 this.runner.moveUp();
             }

@@ -11,7 +11,7 @@ import static GA.Gfx.Helper.Artist.quickLoadTexture;
 public class MazeRunner extends Entity {
 
     private int genomeSize;
-    private final Map map;
+    private Map map;
 
     private int foodEaten;
     private ArrayList<Tile> changedTiles;
@@ -32,6 +32,7 @@ public class MazeRunner extends Entity {
         if(isRendered){
             initTexture();
         }
+        this.genomeSize = genomeSize;
         this.map = map;
         this.foodEaten = 0;
         this.changedTiles = new ArrayList<>();
@@ -83,14 +84,17 @@ public class MazeRunner extends Entity {
 
     private void revertChangedTiles() {
         for(Tile t: this.changedTiles){
-            this.map.setTile((int) t.getX() / this.map.getBlockSize(),(int) t.getY() / this.map.getBlockSize(),TileType.Food, super.isRendered());
+            this.map.setTile((int) t.getX(),(int) t.getY(),TileType.Food, super.isRendered());
         }
         this.changedTiles = new ArrayList<>();
+        this.foodEaten = 0;
     }
 
     private void changeCurrentTileTypeToFloor() {
         this.map.setTile(super.getX(), super.getY(), TileType.Floor, super.isRendered());
-        this.changedTiles.add(this.map.getTile(super.getX(), super.getY()));
+        if(super.isRendered()) {
+            this.changedTiles.add(this.map.getTile(super.getX(), super.getY()));
+        }
     }
 
     public int getFoodEaten() {

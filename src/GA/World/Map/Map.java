@@ -5,9 +5,9 @@ import GA.World.Map.Element.Tile;
 import GA.World.Map.Element.TileType;
 
 public class Map {
-    private int blockSize = 16;
-    private int mapWidth = Window.WIDTH / blockSize;
-    private int mapHeight = (Window.HEIGHT / blockSize) - 1;
+    private int blockSize = 24;
+    private int mapWidth = 25;
+    private int mapHeight = 25;
     private int frameWidth;
     private int frameHeight;
     private float SCALE;
@@ -24,7 +24,7 @@ public class Map {
 
     public Map(final Map map) {
         this.frameWidth = map.getFrameWidth();
-        this.frameHeight = map.getMapHeight();
+        this.frameHeight = map.getFrameHeight();
         this.SCALE = map.getSCALE();
         this.map = getMapClone(map.getMap());
         this.runnerSpawn = map.getRunnerSpawn();
@@ -116,7 +116,7 @@ public class Map {
     }
 
     public void setTile(int xCoord, int yCoord, TileType type, boolean initRender) {
-        Tile tile = new Tile((int) (xCoord * this.blockSize), (int) (yCoord * this.blockSize), this.blockSize, this.blockSize, type);
+        Tile tile = new Tile(xCoord, yCoord, this.blockSize, this.blockSize, type);
         map[xCoord][yCoord] = tile;
         if(initRender){
             tile.initTexture();

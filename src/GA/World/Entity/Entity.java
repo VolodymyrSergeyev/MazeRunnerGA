@@ -34,6 +34,7 @@ public abstract class Entity {
     private Class clas;
 
     private boolean isRendered;
+    private int failedMovesMade;
 
     public Entity(int genomeSize, Map map, Class clas, boolean isRendered){
         this.clas = clas;
@@ -51,11 +52,12 @@ public abstract class Entity {
             this.currentTile = getRandomSpawn();
         }
         this.mapBlockSize = this.map.getBlockSize();
-        this.xCord = (int) this.currentTile.getX() * this.mapBlockSize;
-        this.yCord = (int) this.currentTile.getY() * this.mapBlockSize;
+        this.xCord = (int) this.currentTile.getX();
+        this.yCord = (int) this.currentTile.getY();
         this.angle = 0;
         this.isAlive = true;
         this.movesMade = 0;
+        this.failedMovesMade = 0;
     }
 
     public Entity(ArrayList genome, int genomeSize, Map map, Class clas, boolean isRendered){
@@ -79,11 +81,12 @@ public abstract class Entity {
         this.angle = 0;
         this.isAlive = true;
         this.movesMade = 0;
+        this.failedMovesMade = 0;
     }
 
     public void update(){
         this.tick++;
-        if(this.tick == 15){
+        if(this.tick == 5){
             if(this.currentGene < this.genomeSize) {
                 moveByGenomeId(this.currentGene);
             }
@@ -93,65 +96,77 @@ public abstract class Entity {
     }
 
     public void draw() {
+        float modXCord = (this.xCord * this.mapBlockSize) * this.map.getSCALE();
+        float modYCord = (this.yCord * this.mapBlockSize) * this.map.getSCALE();
         if (isAlive) {
-            drawRotatableRectTexture(this.texture, this.xCord * this.map.getSCALE(), this.yCord * this.map.getSCALE(),
+            drawRotatableRectTexture(this.texture, modXCord, modYCord,
                     this.mapBlockSize * this.map.getSCALE(), this.mapBlockSize * this.map.getSCALE(), this.angle);
         }
     }
 
     public void moveUp(){
         this.angle = 0;
-        int modXCord = xCord / this.mapBlockSize;
-        int modYCord = yCord / this.mapBlockSize - 1;
+        int modXCord = xCord;
+        int modYCord = yCord - 1;
         this.move(modXCord, modYCord);
     }
 
     public void moveDown(){
         this.angle = 180;
-        int modXCord = xCord / this.mapBlockSize;
-        int modYCord = yCord / this.mapBlockSize + 1;
+        int modXCord = xCord;
+        int modYCord = yCord + 1;
         this.move(modXCord, modYCord);
 
     }
 
     public void moveRight(){
         this.angle = 90;
-        int modXCord = xCord / this.mapBlockSize + 1;
-        int modYCord = yCord / this.mapBlockSize;
+        int modXCord = xCord + 1;
+        int modYCord = yCord;
         this.move(modXCord, modYCord);
     }
 
     public void moveLeft(){
         this.angle = 270;
-        int modXCord = xCord / this.mapBlockSize - 1;
-        int modYCord = yCord / this.mapBlockSize;
+        int modXCord = xCord - 1;
+        int modYCord = yCord;
         this.move(modXCord, modYCord);
     }
 
     private void move(int modXCord, int modYCord) {
-        Tile futureTile = this.map.getTile(modXCord, modYCord);
-        if(futureTile.isWalkable()){
-            this.movesMade++;
-            this.yCord = modYCord * this.mapBlockSize;
-            this.xCord = modXCord * this.mapBlockSize;
-            this.currentTile = futureTile;
+        if(isAlive) {
+            Tile futureTile = this.map.getTile(modXCord, modYCord);
+            if (futureTile.isWalkable()) {
+                this.movesMade++;
+                this.yCord = modYCord;
+                this.xCord = modXCord;
+            } else {
+                this.failedMovesMade++;
+            }
+            this.currentTile = map.getTile(this.xCord, this.yCord);
         }
     }
 
+    public int getFailedMovesMade(){
+        return this.failedMovesMade;
+    }
+
     public void moveByGenomeId(int geneId){
-        switch (this.genome.get(geneId)){
-            case 0:
-                this.moveUp();
-                break;
-            case 1:
-                this.moveDown();
-                break;
-            case 2:
-                this.moveRight();
-                break;
-            case 3:
-                this.moveLeft();
-                break;
+        if(isAlive) {
+            switch (this.genome.get(geneId)) {
+                case 0:
+                    this.moveUp();
+                    break;
+                case 1:
+                    this.moveDown();
+                    break;
+                case 2:
+                    this.moveRight();
+                    break;
+                case 3:
+                    this.moveLeft();
+                    break;
+            }
         }
     }
 
@@ -178,20 +193,12 @@ public abstract class Entity {
         return this.currentTile;
     }
 
-    public int getXCord() {
+    public int getX() {
         return xCord;
     }
 
-    public int getYCord() {
-        return yCord;
-    }
-
-    public int getX() {
-        return xCord / this.mapBlockSize;
-    }
-
     public int getY() {
-        return yCord / this.mapBlockSize;
+        return yCord;
     }
 
     public boolean isAlive() {
@@ -228,6 +235,7 @@ public abstract class Entity {
         this.currentGene = 0;
         returnToStartPos();
         this.movesMade = 0;
+        this.failedMovesMade = 0;
         this.isAlive = true;
     }
 

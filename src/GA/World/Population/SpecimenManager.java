@@ -11,12 +11,17 @@ public class SpecimenManager {
     private ArrayList<Specimen> topBestGhostSpecimens;
     private ArrayList<Specimen> generalListOfSpecimens;
     private int numberOfBestSpecimens;
+    private float lowestfScoreInTheRunnerTop;
+    private float lowestfScoreInTheGhostTop;
 
     public SpecimenManager(int populationSize) {
-        this.numberOfBestSpecimens = (int) (populationSize * 0.1);
+        double precent = populationSize <= 20 ? 1 : populationSize <= 200 ? 0.5 : populationSize <= 500 ? 0.25 : 0.1;
+        this.numberOfBestSpecimens = (int) (populationSize * precent);
         this.generalListOfSpecimens = new ArrayList<>();
         this.topBestGhostSpecimens = new ArrayList<>();
         this.topBestRunnerSpecimens = new ArrayList<>();
+        this.lowestfScoreInTheRunnerTop = 0;
+        this.lowestfScoreInTheGhostTop = 0;
     }
 
     public void calculateTopSpecimens() {
@@ -32,7 +37,17 @@ public class SpecimenManager {
             if (getCorrectSpecimenBestList(specimen).size() < this.numberOfBestSpecimens) {
                 addBestSpecimen(specimen, 0, true);
             }
-            findSpotInTheTop(specimen);
+            this.lowestfScoreInTheRunnerTop = this.topBestRunnerSpecimens.get(this.topBestRunnerSpecimens.size()-1).getFScore();
+            //this.lowestfScoreInTheGhostTop = this.topBestGhostSpecimens.get(this.topBestGhostSpecimens.size()-1).getFScore();
+            if(specimen.isRunner()){
+                if(specimen.getFScore() > this.lowestfScoreInTheRunnerTop) {
+                    findSpotInTheTop(specimen);
+                }
+            }else {
+                if (specimen.getFScore() > this.lowestfScoreInTheGhostTop){
+                    findSpotInTheTop(specimen);
+                }
+            }
         }
     }
 
@@ -138,5 +153,7 @@ public class SpecimenManager {
 
     public void removeWeakSpecimens() {
         this.generalListOfSpecimens = new ArrayList<>();
+        this.generalListOfSpecimens.addAll(this.topBestRunnerSpecimens);
+        this.generalListOfSpecimens.addAll(this.topBestGhostSpecimens);
     }
 }

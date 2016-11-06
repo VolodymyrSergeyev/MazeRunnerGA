@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class Logger {
     private ArrayList<Genome> genomeList;
     private Genome bestGenome;
+    private Genome debugGenome;
 
     public Logger(){
         this.genomeList = new ArrayList<>();
@@ -30,5 +31,13 @@ public class Logger {
 
     public void setBestGenome(Genome bestGenome) {
         this.bestGenome = bestGenome;
+    }
+
+    public Genome getDebugGenome() {
+        return this.debugGenome;
+    }
+
+    public void setDebugGenome(Genome genome){
+        this.debugGenome = genome;
     }
 }

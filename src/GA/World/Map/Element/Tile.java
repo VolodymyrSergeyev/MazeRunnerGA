@@ -67,7 +67,7 @@ public class Tile {
     }
 
     public void draw() {
-        drawRotatableRectTexture(texture, x * SCALE, y * SCALE, width * SCALE, height * SCALE, angleTypes[Integer.parseInt(angleID)]);
+        drawRotatableRectTexture(texture, (x * width) * SCALE, (y * height) * SCALE, width * SCALE, height * SCALE, angleTypes[Integer.parseInt(angleID)]);
     }
 
     public float getX() {

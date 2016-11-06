@@ -9,7 +9,7 @@ public class Core {
     StateManager sm;
     boolean isRunning;
     public Core(){
-        this.window = new Window(800, 600, "Maze Runner GA", 1);
+        this.window = new Window(600, 600, "Maze Runner GA", 1);
         this.sm = new StateManager();
         this.isRunning = false;
     }
@@ -23,5 +23,6 @@ public class Core {
             Display.sync(60);
         }
         Display.destroy();
+        this.sm.popManager.stop();
     }
 }
