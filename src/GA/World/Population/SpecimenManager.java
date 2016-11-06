@@ -11,8 +11,8 @@ public class SpecimenManager {
     private ArrayList<Specimen> topBestGhostSpecimens;
     private ArrayList<Specimen> generalListOfSpecimens;
     private int numberOfBestSpecimens;
-    private float lowestfScoreInTheRunnerTop;
-    private float lowestfScoreInTheGhostTop;
+    private double lowestfScoreInTheRunnerTop;
+    private double lowestfScoreInTheGhostTop;
 
     public SpecimenManager(int populationSize) {
         double precent = populationSize <= 20 ? 1 : populationSize <= 200 ? 0.5 : populationSize <= 500 ? 0.25 : 0.1;

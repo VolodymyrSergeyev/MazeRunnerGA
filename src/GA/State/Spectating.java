@@ -30,7 +30,7 @@ public class Spectating implements State {
         this.map = new Map(map);
         this.initialized = true;
         this.bestGenomeInCurrentGen = this.logger.getGenomeByGenerationNumer(this.currentGen);
-        this.runner = new MazeRunner(this.bestGenomeInCurrentGen.getGenome(), this.bestGenomeInCurrentGen.getGenomeSize(), new Map (this.map.getMap()), true);
+        this.runner = new MazeRunner(this.bestGenomeInCurrentGen.getGenome(), new Map (this.map.getMap()), true);
         this.map.initRendering();
         System.out.println(this.logger.getNumberOfGenerations());
     }
@@ -101,7 +101,7 @@ public class Spectating implements State {
 
     private void applyGenomeToRenderedRunner(Genome genome) {
         this.runner.resetWithNewGenome(genome.getGenome());
-        System.out.println("Current max gen: " + this.logger.getNumberOfGenerations() + "   Genome Gen : " + genome.getGeneration() + "     Genome Fitness score : " + genome.getfScore() + "   Genome Changed : " + genome.getGenome().toString());
+        System.out.println("Current max gen: " + this.logger.getNumberOfGenerations() + "   Genome Gen : " + genome.getGeneration() + "     Genome Fitness score : " + genome.getfScore() + "   Genome Size : " + genome.getGenome().size());
     }
 
     @Override

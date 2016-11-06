@@ -23,6 +23,6 @@ public class Core {
             Display.sync(60);
         }
         Display.destroy();
-        this.sm.popManager.stop();
+        this.sm.popManager.interrupt();
     }
 }

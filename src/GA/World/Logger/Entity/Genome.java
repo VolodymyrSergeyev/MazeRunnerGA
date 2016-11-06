@@ -5,9 +5,9 @@ import java.util.ArrayList;
 public class Genome {
     private final ArrayList<Integer> genome;
     private final int generation;
-    private final float fScore;
+    private final double fScore;
 
-    public Genome(ArrayList<Integer> genome, int generation, float fScore){
+    public Genome(ArrayList<Integer> genome, int generation, double fScore){
         this.genome = genome;
         this.generation = generation;
         this.fScore = fScore;
@@ -21,7 +21,7 @@ public class Genome {
         return generation;
     }
 
-    public float getfScore() {
+    public double getfScore() {
         return fScore;
     }
 

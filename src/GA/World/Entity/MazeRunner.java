@@ -27,8 +27,8 @@ public class MazeRunner extends Entity {
         this.changedTiles = new ArrayList<>();
     }
 
-    public MazeRunner(ArrayList genome, int genomeSize, Map map, boolean isRendered) {
-        super(genome, genomeSize, map, MazeRunner.class, isRendered);
+    public MazeRunner(ArrayList genome, Map map, boolean isRendered) {
+        super(genome, genome.size(), map, MazeRunner.class, isRendered);
         if(isRendered){
             initTexture();
         }

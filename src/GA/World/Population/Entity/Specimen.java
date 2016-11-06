@@ -6,7 +6,7 @@ import GA.World.Entity.SpookyGhost;
 
 
 public class Specimen {
-    private float fScore;
+    private double fScore;
     private MazeRunner runner;
     private SpookyGhost ghost;
     private boolean isRunner;
@@ -34,7 +34,7 @@ public class Specimen {
         return this.ghost;
     }
 
-    public float getFScore() {
+    public double getFScore() {
         return this.fScore;
     }
 
@@ -42,7 +42,7 @@ public class Specimen {
         return isRunner;
     }
 
-    public void setfScore(float fScore) {
+    public void setfScore(double fScore) {
         this.fScore = fScore;
     }
 

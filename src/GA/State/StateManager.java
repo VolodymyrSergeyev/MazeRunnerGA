@@ -23,7 +23,7 @@ public class StateManager {
         this.currentState = this.states[1];
         this.map = loadMainMap();
         this.logger = new Logger();
-        this.population = new Population(this.logger, new Map(this.map), 0, 500, 300, 0.8);
+        this.population = new Population(this.logger, new Map(this.map), 0, 300, 300, 0.8);
         this.popManager = new Thread(new PopulationManager(this.population));
         this.popManager.start();
     }
