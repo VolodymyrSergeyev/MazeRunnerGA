@@ -8,19 +8,19 @@ import static org.lwjgl.opengl.GL11.*;
 
 public final class Window {
 
-    public static String title;
-    public static int WIDTH;
+    private static String title;
+    private static int WIDTH;
     public static int HEIGHT;
     public static float SCALE;
 
     public Window(int width, int height, String title, float scale) {
-        this.title = title;
-        this.SCALE = scale;
-        this.WIDTH = width;
-        this.HEIGHT = height;
+        Window.title = title;
+        SCALE = scale;
+        WIDTH = (int)(width * scale);
+        HEIGHT = (int)(height * scale);
         try {
-            Display.setTitle(this.title);
-            Display.setDisplayMode(new DisplayMode(this.WIDTH, this.HEIGHT));
+            Display.setTitle(Window.title);
+            Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
             Display.create();
         } catch (LWJGLException ex) {
             System.out.println(ex.getMessage());

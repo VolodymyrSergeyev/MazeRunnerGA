@@ -1,24 +1,26 @@
 package GA.State;
 
+import GA.Gfx.HUD;
+import GA.Gfx.Helper.Artist;
+import GA.Gfx.Window;
 import GA.World.Logger.Logger;
 import GA.World.Map.Element.TileType;
 import GA.World.Map.Map;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import GA.Gfx.Helper.Artist.*;
 
 import static GA.World.Map.MapManager.*;
 
-public class MapEditor implements State {
+class MapEditor implements State {
     private Map map;
     private TileType[] types;
-    private String angleID;
     private int index;
-    private int tempI;
 
     private boolean initialized = false;
     private StateManager stateManager;
 
-    public MapEditor(StateManager stateManager){
+    MapEditor(StateManager stateManager){
         this.stateManager = stateManager;
     }
 
@@ -31,9 +33,7 @@ public class MapEditor implements State {
         this.types[2] = TileType.RunnerSpawn;
         this.types[3] = TileType.GhostSpawn;
         this.types[4] = TileType.Food;
-        this.angleID = "0";
         this.index = 0;
-        this.tempI = 0;
         this.map.initRendering();
         this.initialized = true;
     }
@@ -88,14 +88,10 @@ public class MapEditor implements State {
         } else {
             index--;
         }
-        if(index == 2 || index == 3){
-            index = 4;
-        }
         if (index > types.length - 1) {
             index = 0;
         } else if (index < 0) {
             index = types.length - 1;
         }
-        System.out.println("Tile changed to: " + types[index].name());
     }
 }

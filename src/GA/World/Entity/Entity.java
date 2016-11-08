@@ -22,6 +22,7 @@ public abstract class Entity {
     private float angle;
 
     private boolean isAlive;
+    private boolean stoped;
 
     private ArrayList<Integer> genome;
     private int genomeSize;
@@ -36,7 +37,7 @@ public abstract class Entity {
     private boolean isRendered;
     private int failedMovesMade;
 
-    public Entity(int genomeSize, Map map, Class clas, boolean isRendered){
+    Entity(int genomeSize, Map map, Class clas, boolean isRendered){
         this.clas = clas;
         this.isRendered = isRendered;
         this.rand = new Random();
@@ -56,11 +57,12 @@ public abstract class Entity {
         this.yCord = (int) this.currentTile.getY();
         this.angle = 0;
         this.isAlive = true;
+        this.stoped = false;
         this.movesMade = 0;
         this.failedMovesMade = 0;
     }
 
-    public Entity(ArrayList genome, int genomeSize, Map map, Class clas, boolean isRendered){
+    Entity(ArrayList<Integer> genome, int genomeSize, Map map, Class clas, boolean isRendered){
         this.clas = clas;
         this.rand = new Random();
         this.isRendered = isRendered;
@@ -80,6 +82,7 @@ public abstract class Entity {
         this.yCord = (int) this.currentTile.getY();
         this.angle = 0;
         this.isAlive = true;
+        this.stoped = false;
         this.movesMade = 0;
         this.failedMovesMade = 0;
     }
@@ -87,10 +90,10 @@ public abstract class Entity {
     public void update(){
         this.tick++;
         if(this.tick == 5){
-            if(this.currentGene < this.genomeSize) {
+            if(this.currentGene < this.genomeSize && !stoped) {
                 moveByGenomeId(this.currentGene);
+                this.currentGene++;
             }
-            this.currentGene++;
             this.tick = 0;
         }
     }
@@ -134,7 +137,7 @@ public abstract class Entity {
     }
 
     private void move(int modXCord, int modYCord) {
-        if(isAlive) {
+        if(isAlive && !stoped) {
             Tile futureTile = this.map.getTile(modXCord, modYCord);
             if (futureTile.isWalkable()) {
                 this.movesMade++;
@@ -144,6 +147,15 @@ public abstract class Entity {
                 this.failedMovesMade++;
             }
             this.currentTile = map.getTile(this.xCord, this.yCord);
+            setCurrentMapTile();
+        }
+    }
+
+    private void setCurrentMapTile() {
+        if(clas == MazeRunner.class){
+            this.map.setCurrentRunnerTile(this.currentTile);
+        }else {
+            this.map.setCurrentGhostTile(this.currentTile);
         }
     }
 
@@ -189,7 +201,7 @@ public abstract class Entity {
         return tmp;
     }
 
-    public Tile  getCurrentTile(){
+    Tile  getCurrentTile(){
         return this.currentTile;
     }
 
@@ -205,8 +217,12 @@ public abstract class Entity {
         return isAlive;
     }
 
-    public void setAlive(boolean alive) {
+    void setAlive(boolean alive) {
         isAlive = alive;
+    }
+
+    void stop(){
+        this.stoped = true;
     }
 
     public ArrayList<Integer> getGenome() {
@@ -225,7 +241,7 @@ public abstract class Entity {
         return movesMade;
     }
 
-    public void setTexture(Texture texture) {
+    void setTexture(Texture texture) {
         this.texture = texture;
     }
 
@@ -237,9 +253,10 @@ public abstract class Entity {
         this.movesMade = 0;
         this.failedMovesMade = 0;
         this.isAlive = true;
+        this.stoped = false;
     }
 
-    public void returnToStartPos() {
+    private void returnToStartPos() {
         if(this.clas == MazeRunner.class){
             this.currentTile = map.getRunnerSpawn();
         }else if (this.clas == SpookyGhost.class){
@@ -254,7 +271,7 @@ public abstract class Entity {
         this.angle = 0;
     }
 
-    public boolean isRendered() {
+    boolean isRendered() {
         return isRendered;
     }
 }

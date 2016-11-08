@@ -12,7 +12,7 @@ public class PopulationManager implements Runnable {
     public void run() {
         if(!Thread.currentThread().isInterrupted()) {
             if (this.population.getNumOfGenerations() == 0) {
-                while (!this.population.goalAchieved()) {
+                while (!this.population.goalAchieved() && !this.population.isEndded() && !Thread.currentThread().isInterrupted()) {
                     population.naturalSelection();
                 }
             } else {
@@ -20,7 +20,7 @@ public class PopulationManager implements Runnable {
                     population.naturalSelection();
                 }
             }
-            this.population.logger.setBestGenome(this.population.getBestRunnerGenome());
+            this.population.logger.setBestGenomePair(this.population.getBestGenomePair());
         }
     }
 

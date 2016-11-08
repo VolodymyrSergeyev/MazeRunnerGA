@@ -3,11 +3,10 @@ package GA.World.Population;
 
 import GA.World.Entity.MazeRunner;
 import GA.World.Entity.SpookyGhost;
-import GA.World.Logger.Entity.Genome;
+import GA.World.Logger.Entity.GenomePair;
 import GA.World.Logger.Logger;
 import GA.World.Map.Map;
 import GA.World.Population.Entity.Specimen;
-import org.lwjgl.Sys;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -18,23 +17,31 @@ public class Population {
     private int genomeSize;
     private int genNum;
     private MazeRunner bestRunnerInCurrentGen = null;
+    private SpookyGhost bestGhostInCurrentGen = null;
 
     private double bestRunnerFScoreInCurrentGen = 0;
     private double highestRunnerFitnessScore = 0;
-    private Genome bestRunnerGenome = null;
-    private ArrayList<Specimen> tmpRunners;
+    private double previousHighestRunnerFitnessScore = 0;
+    private GenomePair bestGenomePair = null;
+    private double bestGhostFScoreInCurrentGen = 0;
+    private double highestGhostFitnessScore = 0;
+    private double previousHighestGhostFitnessScore = 0;
 
-    private ArrayList<Specimen> tmpGhosts;
+    private ArrayList<Specimen> tmpSpecimen;
+
     private Random random;
 
     private SpecimenManager specimenManager;
     public Logger logger;
     private Map map;
     private boolean goalAchieved;
+    private boolean endded;
     private boolean infinite;
     private boolean init;
     private boolean first = true;
     private double mutationRate;
+
+    private int count = 0;
 
     public Population(Logger logger, Map map, int numOfGenerations, int populationSize, int genomeSize, double mutationRate) {
         this.numOfGenerations = numOfGenerations;
@@ -48,7 +55,7 @@ public class Population {
         this.genomeSize = genomeSize;
         this.mutationRate = mutationRate;
 
-        freeTmpLists();
+        this.tmpSpecimen = new ArrayList<>();
 
         this.random = new Random();
         this.specimenManager = new SpecimenManager(this.populationSize);
@@ -57,77 +64,137 @@ public class Population {
 
         this.init = true;
         this.goalAchieved = false;
+        this.endded = false;
 
         initializeFirstRunnerGeneration();
     }
 
-    public void initializeFirstRunnerGeneration() {
+    private void initializeFirstRunnerGeneration() {
         for (int i = 0; i < this.populationSize; i++) {
-            this.specimenManager.addSpecimen(new Specimen(new MazeRunner(genomeSize, getMapCopy(), false), null, 0));
+            Map map = getMapCopy();
+            this.specimenManager.addSpecimen(new Specimen(new MazeRunner(genomeSize, map, false), new SpookyGhost(genomeSize, map, false), 0, 0));
         }
     }
 
-    //TODO: create initializeFirstGhostGeneration()
-
-    public void calculateFitnessScoresForCurrentGen() {
+    private void calculateFitnessScoresForCurrentGen() {
         this.genNum++;
-        double fScore = 0;
+        double runnerFScore;
+        double ghostFScore;
         Specimen s;
-        for (int i = 0; i < this.specimenManager.getGeneralListOfSpecimens().size(); i++) {
+        int runnerVictoryPoints = 0;
+        boolean runnerVictory;
+        boolean ghostVictory;
+        int size = this.specimenManager.getGeneralListOfSpecimens().size();
+        for (int i = 0; i < size; i++) {
             s = this.specimenManager.getGeneralListOfSpecimens().get(i);
             calculateSpecimenFitnessScore(s);
-            if (s.isRunner()) {
-                fScore = s.getFScore();
-                //Logging the best runner in current generation
-                //Temporary storing best runner in the generations and its score
-                if (fScore > this.bestRunnerFScoreInCurrentGen || first) {
-                    this.bestRunnerFScoreInCurrentGen = fScore;
-                    this.bestRunnerInCurrentGen = s.getRunner();
+            runnerFScore = s.getRunnerFScore();
+            ghostFScore = s.getGhostFScore();
+
+            if(s.isRunnerIsAWinner()){
+                runnerVictoryPoints++;
+            }
+
+            runnerVictory = runnerVictoryPoints > size / 2;
+            ghostVictory = !runnerVictory;
+
+            if ((runnerFScore > this.bestRunnerFScoreInCurrentGen && runnerVictory) || first) {
+                setBestSpecimenInCurrentGen(runnerFScore, ghostFScore, s);
+            }
+
+            if ((ghostFScore > this.bestGhostFScoreInCurrentGen && ghostVictory) || first) {
+                setBestSpecimenInCurrentGen(runnerFScore, ghostFScore, s);
+            }
+
+            if((runnerFScore > this.highestRunnerFitnessScore && runnerVictory) || first){
+                this.highestRunnerFitnessScore = runnerFScore;
+                logCurrentBestSpecimen(runnerFScore, ghostFScore, s);
+            }
+
+            if ((ghostFScore > this.highestGhostFitnessScore && ghostVictory) || first) {
+                this.highestGhostFitnessScore = ghostFScore;
+                logCurrentBestSpecimen(runnerFScore, ghostFScore, s);
+            }
+
+            if(first){
+                this.first = false;
+            }
+
+            if (i == this.specimenManager.getGeneralListOfSpecimens().size() - 1) {
+                if (this.previousHighestRunnerFitnessScore == this.highestRunnerFitnessScore) {
+                    this.count++;
+                    if (this.count > 50) {
+                        this.endded = true;
+                    }
+                } else {
+                    this.previousHighestRunnerFitnessScore = this.highestRunnerFitnessScore;
+                    this.count = 0;
                 }
-                if (i == this.specimenManager.getGeneralListOfSpecimens().size() - 1) {
-                    this.logger.addGenome(new Genome(this.bestRunnerInCurrentGen.getGenome(), this.genNum, this.bestRunnerFScoreInCurrentGen));
-                }
-                if (fScore > this.highestRunnerFitnessScore || first) {
-                    this.first = false;
-                    this.highestRunnerFitnessScore = fScore;
-                    this.bestRunnerGenome = new Genome(s.getRunner().getGenome(), this.genNum, fScore);
-                    this.logger.setBestGenome(this.bestRunnerGenome);
-                }
-            } else {
-                //TODO: Ghost
+                this.logger.addGenome(new GenomePair(this.bestRunnerInCurrentGen.getGenome(), this.bestGhostInCurrentGen.getGenome(), this.genNum, this.bestRunnerFScoreInCurrentGen, this.bestGhostFScoreInCurrentGen));
             }
         }
     }
 
-    public void calculateSpecimenFitnessScore(Specimen specimen) {
-        double fScore = 0;
-        if(!specimen.isTested()) {
-            if (specimen.isRunner()) {
-                MazeRunner runner = specimen.getRunner();
-                for (int i = 0; i < this.genomeSize; i++) {
+    private void setBestSpecimenInCurrentGen(double runnerFScore, double ghostFScore, Specimen s) {
+        this.bestRunnerFScoreInCurrentGen = runnerFScore;
+        this.bestRunnerInCurrentGen = s.getRunner();
+
+        this.bestGhostFScoreInCurrentGen = ghostFScore;
+        this.bestGhostInCurrentGen = s.getGhost();
+    }
+
+    private void logCurrentBestSpecimen(double runnerFScore, double ghostFScore, Specimen s) {
+            this.bestGenomePair = new GenomePair(s.getRunner().getGenome(), s.getGhost().getGenome(), this.genNum, runnerFScore, ghostFScore);
+            this.logger.setBestGenomePair(this.bestGenomePair);
+    }
+
+    private void calculateSpecimenFitnessScore(Specimen specimen) {
+        double runnerFScore = 0;
+        double ghostFScore = 0;
+        if (!specimen.isTested()) {
+            MazeRunner runner = specimen.getRunner();
+            SpookyGhost ghost = specimen.getGhost();
+            boolean firstDeath = true;
+            for (int i = 0; i < this.genomeSize; i++) {
+                if(firstDeath) {
+                    double tmpDcrScore = ((double) (this.genomeSize - i) / (double) this.genomeSize) * 100.0;
+                    double tmpIncScore = ((double) i / (double) this.genomeSize) * 100.0;
                     int oldFoodState = runner.getFoodEaten();
+                    double oldXPosState = Math.pow(runner.getX() - ghost.getX(), 2.0);
+                    double oldYPosState = Math.pow(runner.getY() - ghost.getY(), 2.0);
+                    double absOldPos = oldXPosState + oldYPosState;
                     runner.moveByGenomeId(i);
-                    if(runner.getFoodEaten() <= oldFoodState){
-                        double tmpScore = ((double) (this.genomeSize - i) / (double) this.genomeSize) * 100.0;
-                        fScore -= Math.pow(tmpScore,4);
+                    ghost.moveByGenomeId(i);
+                    double newXPosState = Math.pow(runner.getX() - ghost.getX(), 2.0);
+                    double newYPosState = Math.pow(runner.getY() - ghost.getY(), 2.0);
+                    double absNewPos = newXPosState + newYPosState;
+                    if (runner.getFoodEaten() <= oldFoodState) {
+                        runnerFScore -= Math.pow(tmpDcrScore, 6);
+                    }
+                    if (absNewPos >= absOldPos) {
+                        ghostFScore -= Math.pow(tmpDcrScore, 6);
+                    }
+                    if (!runner.isAlive()) {
+                        //runnerFScore -= Math.pow(tmpDcrScore, 10);
+                        //ghostFScore += Math.pow(tmpDcrScore, 10);
+                        //ghostFScore += Math.pow(tmpIncScore, 6);
+                        //runnerFScore -= Math.pow(tmpDcrScore, 6);
+                        runnerFScore = Double.NEGATIVE_INFINITY;
+                        firstDeath = false;
                     }
                 }
-                if(!specimen.getRunner().isAlive()){
-                    fScore = Double.NEGATIVE_INFINITY;
-                }
-                specimen.setfScore(fScore);
-                specimen.setTested();
-                if (runner.getFoodEaten() == map.getMaxFood()) {
-                    this.goalAchieved = true;
-                }
-            } else {
-                //TODO: Ghost
-                SpookyGhost ghost = specimen.getGhost();
+            }
+            specimen.setRunnerIsAWinner(firstDeath);
+            specimen.setRunnerFScore(runnerFScore);
+            specimen.setGhostFScore(ghostFScore);
+            specimen.setTested();
+            if (runner.getFoodEaten() == map.getMaxFood()) {
+                this.goalAchieved = true;
             }
         }
     }
 
-    public ArrayList<Integer> createGenomePool(ArrayList<Specimen> specimens) {
+    private ArrayList<Integer> createGenomePool(ArrayList<Specimen> specimens) {
 
         ArrayList<Integer> pool = new ArrayList<>();
         for (int i = 0; i < specimens.size(); i++) {
@@ -140,7 +207,7 @@ public class Population {
     }
 
     /* cross-over by half genomes */
-    public void naturalSelection() {
+    void naturalSelection() {
         calculateFitnessScoresForCurrentGen();
         this.specimenManager.calculateTopSpecimens();
         this.specimenManager.removeWeakSpecimens();
@@ -149,109 +216,100 @@ public class Population {
         for (int i = 0; i < this.populationSize - 1; i = i + 2) {
             Map map1 = getMapCopy();
             Map map2 = getMapCopy();
-            performRunnerCrossOver(runnerGenomePool, map1, map2);
-            performGhostNaturalSelection(ghostGenomePool, map1, map2);
+            performSpecimenCrossOver(runnerGenomePool, ghostGenomePool, map1, map2);
         }
         mutateTopBestSpecimens();
-        addTmpListsToGeneralSpecimenList();
-        freeTmpLists();
+        this.specimenManager.getGeneralListOfSpecimens().addAll(this.tmpSpecimen);
+        this.tmpSpecimen = new ArrayList<>();
     }
 
     private void reInitializeRunnerPopulation() {
         this.specimenManager.removeWeakSpecimens();
         initializeFirstRunnerGeneration();
         calculateFitnessScoresForCurrentGen();
-        if(this.bestRunnerFScoreInCurrentGen == 0){
+        if (this.bestRunnerFScoreInCurrentGen == 0) {
             reInitializeRunnerPopulation();
         }
     }
 
-    private void addTmpListsToGeneralSpecimenList() {
-        this.specimenManager.getGeneralListOfSpecimens().addAll(this.tmpRunners);
-        this.specimenManager.getGeneralListOfSpecimens().addAll(this.tmpGhosts);
-    }
+    private void performSpecimenCrossOver(ArrayList<Integer> runnerPool, ArrayList<Integer> ghostPool, Map map1, Map map2) {
+        ArrayList<Integer> runnerChromosome1 = new ArrayList<>();
+        ArrayList<Integer> runnerChromosome2 = new ArrayList<>();
+        ArrayList<Integer> runnerNewGenome1 = new ArrayList<>();
+        ArrayList<Integer> runnerNewGenome2 = new ArrayList<>();
+        ArrayList<Integer> ghostChromosome1 = new ArrayList<>();
+        ArrayList<Integer> ghostChromosome2 = new ArrayList<>();
+        ArrayList<Integer> ghostNewGenome1 = new ArrayList<>();
+        ArrayList<Integer> ghostNewGenome2 = new ArrayList<>();
 
-    private void freeTmpLists() {
-        this.tmpRunners = new ArrayList<>();
-        this.tmpGhosts = new ArrayList<>();
-    }
+        MazeRunner runnerParent1 = this.specimenManager.getTopBestRunnerSpecimens()
+                .get(runnerPool.get(getRandomNumberBetween1And(runnerPool.size()))).getRunner();
+        MazeRunner runnerParent2 = this.specimenManager.getTopBestRunnerSpecimens()
+                .get(runnerPool.get(getRandomNumberBetween1And(runnerPool.size()))).getRunner();
 
-    private void performGhostNaturalSelection(ArrayList<Integer> pool, Map map1, Map map2) {
-
-    }
-
-    private void performRunnerCrossOver(ArrayList<Integer> pool, Map map1, Map map2) {
-        ArrayList<Integer> chromosome1 = new ArrayList<>();
-        ArrayList<Integer> chromosome2 = new ArrayList<>();
-        ArrayList<Integer> newGenome1 = new ArrayList<>();
-        ArrayList<Integer> newGenome2 = new ArrayList<>();
-
-        MazeRunner parent1 = this.specimenManager.getTopBestRunnerSpecimens()
-                .get(pool.get(getRandomNumberBetween1And(pool.size()))).getRunner();
-        MazeRunner parent2 = this.specimenManager.getTopBestRunnerSpecimens()
-                .get(pool.get(getRandomNumberBetween1And(pool.size()))).getRunner();
+        SpookyGhost ghostParent1 = this.specimenManager.getTopBestRunnerSpecimens()
+                .get(ghostPool.get(getRandomNumberBetween1And(ghostPool.size()))).getGhost();
+        SpookyGhost ghostParent2 = this.specimenManager.getTopBestRunnerSpecimens()
+                .get(ghostPool.get(getRandomNumberBetween1And(ghostPool.size()))).getGhost();
 
 
         int splitPoint = (int) (this.genomeSize * getRandomPercent(0.9));
 
-        chromosome1.addAll(parent1.getGenome().subList(0, splitPoint));
-        chromosome2.addAll(parent2.getGenome().subList(splitPoint, this.genomeSize));
+        runnerChromosome1.addAll(runnerParent1.getGenome().subList(0, splitPoint));
+        runnerChromosome2.addAll(runnerParent2.getGenome().subList(splitPoint, this.genomeSize));
 
-        newGenome1.addAll(chromosome1);
-        newGenome1.addAll(chromosome2);
+        ghostChromosome1.addAll(ghostParent1.getGenome().subList(0, splitPoint));
+        ghostChromosome2.addAll(ghostParent2.getGenome().subList(splitPoint, this.genomeSize));
 
-        if(getRandomNumberBetween1And(101) < (int)(100 * this.mutationRate)){
-            newGenome1 = getMutatedGenome(newGenome1);
+        runnerNewGenome1.addAll(runnerChromosome1);
+        runnerNewGenome1.addAll(runnerChromosome2);
+
+        ghostNewGenome1.addAll(ghostChromosome1);
+        ghostNewGenome1.addAll(ghostChromosome2);
+
+
+        if (getRandomNumberBetween1And(101) < (int) (100 * this.mutationRate)) {
+            runnerNewGenome1 = getMutatedGenome(runnerNewGenome1);
         }
 
-        this.tmpRunners.add(new Specimen(new MazeRunner(newGenome1, map1, false), null, 0));
-
-
-        newGenome2.addAll(chromosome2);
-        newGenome2.addAll(chromosome1);
-
-        if(getRandomNumberBetween1And(101) < (int)(100 * this.mutationRate)){
-            newGenome2 = getMutatedGenome(newGenome2);
+        if (getRandomNumberBetween1And(101) < (int) (100 * this.mutationRate)) {
+            ghostNewGenome1 = getMutatedGenome(ghostNewGenome1);
         }
 
-        this.tmpRunners.add(new Specimen(new MazeRunner(newGenome2, map2, false), null, 0));
+        this.tmpSpecimen.add(new Specimen(new MazeRunner(runnerNewGenome1, map1, false), new SpookyGhost(ghostNewGenome1, map1, false), 0, 0));
+
+
+        runnerNewGenome2.addAll(runnerChromosome2);
+        runnerNewGenome2.addAll(runnerChromosome1);
+
+        ghostNewGenome2.addAll(ghostChromosome2);
+        ghostNewGenome2.addAll(ghostChromosome1);
+
+        if (getRandomNumberBetween1And(101) < (int) (100 * this.mutationRate)) {
+            runnerNewGenome2 = getMutatedGenome(runnerNewGenome2);
+        }
+
+        if (getRandomNumberBetween1And(101) < (int) (100 * this.mutationRate)) {
+            ghostNewGenome2 = getMutatedGenome(ghostNewGenome2);
+        }
+
+        this.tmpSpecimen.add(new Specimen(new MazeRunner(runnerNewGenome2, map2, false), new SpookyGhost(ghostNewGenome2, map2, false), 0, 0));
     }
 
     private void mutateTopBestSpecimens() {
-        for (Specimen s: this.specimenManager.getGeneralListOfSpecimens()){
-            tmpRunners.add(new Specimen(new MazeRunner(getMutatedGenome(s.getRunner().getGenome()), getMapCopy(), false), null, 0));
-        }
-
-        /* TODO: fix this make so new Specimen created
-        ArrayList<Specimen> waitingForPairGhost = new ArrayList<>();
-        ArrayList<Specimen> waitingForPairRunner = new ArrayList<>();
         for (Specimen s : this.specimenManager.getGeneralListOfSpecimens()) {
-            if (s.isRunner()) {
-                waitingForPairGhost.add(s);
-            } else {
-                waitingForPairRunner.add(s);
-            }
-            if(waitingForPairGhost.size() > 0 && waitingForPairRunner.size() > 0){
-                Map map = getMapCopy();
-                Specimen runner = waitingForPairGhost.get(0);
-                Specimen ghost = waitingForPairRunner.get(0);
-                waitingForPairGhost.remove(0);
-                waitingForPairRunner.remove(0);
-                runner.mutateGenome(getRandomPercent());
-                ghost.mutateGenome(getRandomPercent());
-                tmpRunners.add(runner);
-                tmpGhosts.add(ghost);
-            }
+            Map map = getMapCopy();
+            tmpSpecimen.add(new Specimen(new MazeRunner(getMutatedGenome(s.getRunner().getGenome()), map, false),
+                    new SpookyGhost(getMutatedGenome(s.getGhost().getGenome()), map, false), 0, 0));
         }
-        */
     }
 
     private ArrayList<Integer> getMutatedGenome(ArrayList<Integer> genome) {
         ArrayList<Integer> mutatedGenome = new ArrayList<>();
-        for(Integer i: genome){
-            if(getRandomNumberBetween1And(101) < 2){
+        for (Integer i : genome) {
+            if (getRandomNumberBetween1And(101) < 2) {
                 mutatedGenome.add(getRandomNumberBetween1And(5) - 1);
-            }else {
+            } else {
                 mutatedGenome.add(i);
             }
         }
@@ -262,7 +320,7 @@ public class Population {
         return null;
     }
 
-    private Map getMapCopy(){
+    private Map getMapCopy() {
         return new Map(this.map);
     }
 
@@ -344,21 +402,21 @@ public class Population {
 
     public String get_sFitness_values(float[] values) {
         String sValues = "";
-        for (int i = 0; i < values.length; i++) {
-            sValues = sValues + values[i] + ", ";
+        for (float value : values) {
+            sValues = sValues + value + ", ";
         }
         return sValues;
     }
 
     private float get_average_fitness(float[] values) {
         float average = 0f;
-        for (int i = 0; i < values.length; i++) {
-            average = average + values[i];
+        for (float value : values) {
+            average = average + value;
         }
         return average / values.length;
     }
 
-    public int getNumOfGenerations(){
+    int getNumOfGenerations() {
         return this.numOfGenerations;
     }
 
@@ -366,15 +424,19 @@ public class Population {
         return this.populationSize;
     }
 
-    public boolean goalAchieved() {
+    boolean goalAchieved() {
         return this.goalAchieved;
     }
 
-    public Genome getBestRunnerGenome() {
-        return this.bestRunnerGenome;
+    GenomePair getBestGenomePair() {
+        return this.bestGenomePair;
     }
 
     public boolean isInfinite() {
         return this.infinite;
+    }
+
+    boolean isEndded() {
+        return this.endded;
     }
 }

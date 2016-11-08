@@ -52,6 +52,14 @@ public class Artist {
         glVertex2f(x, y + height);
         glEnd();
     }
+    public static void drawRect(float x, float y, float width, float height, float r, float g, float b) {
+        glBegin(GL_QUADS);
+        glVertex2f(x, y);
+        glVertex2f(x + width, y);
+        glVertex2f(x + width, y + height);
+        glVertex2f(x, y + height);
+        glEnd();
+    }
 
     public static void drawRectTexture(Texture tex, float x, float y,
                                        float width, float height) {
@@ -99,19 +107,18 @@ public class Artist {
         glLoadIdentity();
     }
 
-    public static Texture loadTexture(String path, String fileType) {
+    private static Texture loadTexture(String path, String fileType) {
         Texture tex = null;
         InputStream in = ResourceLoader.getResourceAsStream(path);
         try {
             tex = TextureLoader.getTexture(fileType, in);
-        } catch (IOException e) {
+        } catch (IOException ignored) {
         }
         return tex;
     }
 
     public static Texture quickLoadTexture(String name) {
-        Texture tex = loadTexture("res" + File.separator + "img" + File.separator + name + ".png", "PNG");
-        return tex;
+        return loadTexture("res" + File.separator + "img" + File.separator + name + ".png", "PNG");
     }
 
     private static int getCircleSegmentNum(float r) {

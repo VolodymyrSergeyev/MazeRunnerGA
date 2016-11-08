@@ -15,6 +15,7 @@ public class MazeRunner extends Entity {
 
     private int foodEaten;
     private ArrayList<Tile> changedTiles;
+    private Tile currentTile;
 
     public MazeRunner(int genomeSize, Map map, boolean isRendered) {
         super(genomeSize, map, MazeRunner.class, isRendered);
@@ -25,17 +26,19 @@ public class MazeRunner extends Entity {
         this.map = map;
         this.foodEaten = 0;
         this.changedTiles = new ArrayList<>();
+        this.currentTile = super.getCurrentTile();
     }
 
-    public MazeRunner(ArrayList genome, Map map, boolean isRendered) {
+    public MazeRunner(ArrayList<Integer> genome, Map map, boolean isRendered) {
         super(genome, genome.size(), map, MazeRunner.class, isRendered);
         if(isRendered){
             initTexture();
         }
-        this.genomeSize = genomeSize;
+        this.genomeSize = genome.size();
         this.map = map;
         this.foodEaten = 0;
         this.changedTiles = new ArrayList<>();
+        this.currentTile = super.getCurrentTile();
     }
 
     private void initTexture(){
@@ -67,13 +70,18 @@ public class MazeRunner extends Entity {
     }
 
     private void checkCurrentTile() {
-        Tile currentTile = super.getCurrentTile();
-        if(currentTile.getType() == TileType.Food){
-            changeCurrentTileTypeToFloor();
-            this.foodEaten ++;
-        }
-        if(currentTile.getX()  == this.map.getCurrentGhostTile().getX() &&
-                currentTile.getY()  == this.map.getCurrentGhostTile().getY()){
+        Tile ghostTile =  this.map.getCurrentGhostTile();
+        if(this.currentTile.getX() != ghostTile.getX() || this.currentTile.getY() != ghostTile.getY()) {
+            this.currentTile = super.getCurrentTile();
+            if (currentTile.getType() == TileType.Food) {
+                changeCurrentTileTypeToFloor();
+                this.foodEaten++;
+            }
+            if (currentTile.getX() == this.map.getCurrentGhostTile().getX() &&
+                    currentTile.getY() == this.map.getCurrentGhostTile().getY()) {
+                die();
+            }
+        } else {
             die();
         }
     }
@@ -104,6 +112,7 @@ public class MazeRunner extends Entity {
     @Override
     public void resetWithNewGenome(ArrayList<Integer> genome) {
         super.resetWithNewGenome(genome);
+        this.currentTile = super.getCurrentTile();
         revertChangedTiles();
     }
 }

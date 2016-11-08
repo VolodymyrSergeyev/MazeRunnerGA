@@ -11,54 +11,51 @@ import org.newdawn.slick.opengl.Texture;
 import static GA.Gfx.Helper.Artist.drawRectTexture;
 import static GA.Gfx.Helper.Artist.quickLoadTexture;
 
-public class Init implements State {
+class Init implements State {
 
     private Texture background;
     private HUD menuHUD;
     private final StateManager stateManager;
-    
-    private boolean LMBisDown;
+
     private boolean initialized = false;
 
-    public Init(StateManager stateManager) {
+    Init(StateManager stateManager) {
         this.stateManager = stateManager;
     }
-    
+
     @Override
     public void init(Logger logger, Map map) {
         this.background = quickLoadTexture("bk");
         this.menuHUD = new HUD();
-        this.menuHUD.addButton("start", "start", Window.WIDTH / 2 - 130, (int) (Window.HEIGHT * 0.45f));
-        this.menuHUD.addButton("map editor", "map editor", Window.WIDTH / 2 - 130, (int) (Window.HEIGHT * 0.45f) + 100);
-        this.menuHUD.addButton("exit", "exit", Window.WIDTH / 2 - 130, (int) (Window.HEIGHT * 0.45f) + 200);
+        this.menuHUD.addButton("start", "i_start", "h_start", null, Window.getWIDTH() / 2 - (int) (130 * Window.SCALE), (int) (Window.getHEIGHT() * 0.5f));
+        this.menuHUD.addButton("map editor", "i_map editor", "h_map editor", null, Window.getWIDTH() / 2 - (int) (130 * Window.SCALE), (int) (Window.getHEIGHT() * 0.5f) + (int) (100 * Window.SCALE));
+        this.menuHUD.addButton("exit", "i_exit", "h_exit", null, Window.getWIDTH() / 2 - (int) (130 * Window.SCALE), (int) (Window.getHEIGHT() * 0.5f) + (int) (200 * Window.SCALE));
         this.initialized = true;
     }
-    
+
     private void updateButtons() {
-        if (Mouse.isButtonDown(0) && !LMBisDown) {
-            if (this.menuHUD.isButtonClicked("start")) {
-                this.stateManager.changeToSpectatingState();
-            }
-            if (this.menuHUD.isButtonClicked("map editor")) {
-                this.stateManager.changeToMapEditState();
-            }
-            if (this.menuHUD.isButtonClicked("exit")) {
-                System.exit(0);
-            }
+        if (this.menuHUD.isButtonClicked("start")) {
+            this.stateManager.changeToSpectatingState();
         }
-        LMBisDown = Mouse.isButtonDown(0);
+        if (this.menuHUD.isButtonClicked("map editor")) {
+            this.stateManager.changeToMapEditState();
+        }
+        if (this.menuHUD.isButtonClicked("exit")) {
+            System.exit(0);
+        }
     }
-    
+
     @Override
     public void update() {
-        drawRectTexture(background, 0, 0, 1280, 640);
+        drawRectTexture(background, 0, 0, 960 * Window.SCALE, 695 * Window.SCALE);
+        menuHUD.update();
         menuHUD.draw();
         updateButtons();
     }
-    
+
     @Override
     public boolean isInitialized() {
         return this.initialized;
     }
-    
+
 }

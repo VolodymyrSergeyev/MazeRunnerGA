@@ -1,29 +1,23 @@
 package GA.World.Population.Entity;
 
-import GA.World.Entity.Entity;
 import GA.World.Entity.MazeRunner;
 import GA.World.Entity.SpookyGhost;
 
 
 public class Specimen {
-    private double fScore;
+    private double runnerFScore;
+    private double ghostFScore;
     private MazeRunner runner;
     private SpookyGhost ghost;
-    private boolean isRunner;
     private boolean tested;
+    private boolean runnerIsAWinner;
 
-    public Specimen(MazeRunner runner, SpookyGhost ghost, float fScore){
+    public Specimen(MazeRunner runner, SpookyGhost ghost, float runnerFScore, float ghostFScore){
         this.tested = false;
-        if(runner != null){
-            this.isRunner = true;
-            this.runner = runner;
-            this.ghost = null;
-        }else {
-            this.isRunner = false;
-            this.ghost = ghost;
-            this.runner = null;
-        }
-        this.fScore = fScore;
+        this.runner = runner;
+        this.ghost = ghost;
+        this.runnerFScore = runnerFScore;
+        this.ghostFScore = ghostFScore;
     }
 
     public MazeRunner getRunner() {
@@ -34,16 +28,19 @@ public class Specimen {
         return this.ghost;
     }
 
-    public double getFScore() {
-        return this.fScore;
+    public double getRunnerFScore() {
+        return this.runnerFScore;
+    }
+    public double getGhostFScore() {
+        return this.ghostFScore;
     }
 
-    public boolean isRunner() {
-        return isRunner;
+    public void setRunnerFScore(double runnerFScore) {
+        this.runnerFScore = runnerFScore;
     }
 
-    public void setfScore(double fScore) {
-        this.fScore = fScore;
+    public void setGhostFScore(double ghostFScore) {
+        this.ghostFScore = ghostFScore;
     }
 
     public boolean isTested() {
@@ -52,5 +49,13 @@ public class Specimen {
 
     public void setTested(){
         this.tested = true;
+    }
+
+    public boolean isRunnerIsAWinner() {
+        return runnerIsAWinner;
+    }
+
+    public void setRunnerIsAWinner(boolean runnerIsAWinner) {
+        this.runnerIsAWinner = runnerIsAWinner;
     }
 }

@@ -2,7 +2,6 @@ package GA.Gfx;
 
 
 import GA.Gfx.Element.Button;
-import org.lwjgl.input.Mouse;
 
 import java.util.ArrayList;
 
@@ -18,24 +17,27 @@ public class HUD {
         this.buttonList = new ArrayList<>();
     }
 
-    public void addButton(String name, String textureName, int x, int y) {
-        buttonList.add(new Button(name, quickLoadTexture(textureName), x, y));
+    public void addButton(String name, String initTextureName, String hoverTextureName, String pressedTextureName, int x, int y) {
+        buttonList.add(new Button(name, initTextureName == null ? null : quickLoadTexture(initTextureName),
+                hoverTextureName == null ? null : quickLoadTexture(hoverTextureName),
+                pressedTextureName == null ? null : quickLoadTexture(pressedTextureName), x, y));
     }
 
     public boolean isButtonClicked(String buttonName) {
-        Button b = getButton(buttonName);
-        float mouseY = Window.HEIGHT - Mouse.getY() - 1;
-        return Mouse.getX() > b.getX() && Mouse.getX() < b.getX() + b.getWidth() / 2
-                && mouseY > b.getY() && mouseY < b.getY() + b.getHeight() / 2;
+        return getButton(buttonName).isLMBReleased();
     }
 
-    public Button getButton(String buttonName) {
+    private Button getButton(String buttonName) {
         for (Button b : buttonList) {
             if (b.getName().equals(buttonName)) {
                 return b;
             }
         }
         return null;
+    }
+
+    public void update(){
+        buttonList.forEach(Button::update);
     }
 
     public void draw() {
