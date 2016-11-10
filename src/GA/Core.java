@@ -9,7 +9,7 @@ public class Core {
     private StateManager sm;
     private boolean isRunning;
     public Core(){
-        this.window = new Window(600, 648, "Maze Runner GA", 1.4f);
+        this.window = new Window(600, 600, "Maze Runner GA", 1.4f);
         this.sm = new StateManager();
         this.isRunning = false;
     }

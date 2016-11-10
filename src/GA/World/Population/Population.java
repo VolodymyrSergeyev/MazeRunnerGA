@@ -26,6 +26,7 @@ public class Population {
     private double bestGhostFScoreInCurrentGen = 0;
     private double highestGhostFitnessScore = 0;
     private double previousHighestGhostFitnessScore = 0;
+    private Specimen bestSpecimen = null;
 
     private ArrayList<Specimen> tmpSpecimen;
 
@@ -80,41 +81,49 @@ public class Population {
         this.genNum++;
         double runnerFScore;
         double ghostFScore;
+        double fScore;
         Specimen s;
         int runnerVictoryPoints = 0;
         boolean runnerVictory;
         boolean ghostVictory;
+        ArrayList<Double> runnerScoreList  = new ArrayList<>();
+        ArrayList<Double> ghostScoreList  = new ArrayList<>();
         int size = this.specimenManager.getGeneralListOfSpecimens().size();
         for (int i = 0; i < size; i++) {
             s = this.specimenManager.getGeneralListOfSpecimens().get(i);
             calculateSpecimenFitnessScore(s);
             runnerFScore = s.getRunnerFScore();
             ghostFScore = s.getGhostFScore();
+            fScore = runnerFScore + ghostFScore;
+
+            runnerScoreList.add(runnerFScore);
+            ghostScoreList.add(ghostFScore);
 
             if(s.isRunnerIsAWinner()){
                 runnerVictoryPoints++;
             }
 
-            runnerVictory = runnerVictoryPoints > size / 2;
+            runnerVictory = runnerVictoryPoints > (i + 1) / 2;
             ghostVictory = !runnerVictory;
 
-            if ((runnerFScore > this.bestRunnerFScoreInCurrentGen && runnerVictory) || first) {
+            if ((fScore > this.bestRunnerFScoreInCurrentGen + this.bestGhostFScoreInCurrentGen) || first) {
                 setBestSpecimenInCurrentGen(runnerFScore, ghostFScore, s);
             }
 
-            if ((ghostFScore > this.bestGhostFScoreInCurrentGen && ghostVictory) || first) {
-                setBestSpecimenInCurrentGen(runnerFScore, ghostFScore, s);
-            }
+//            if ((ghostFScore > this.bestGhostFScoreInCurrentGen && ghostVictory) || first) {
+//                setBestSpecimenInCurrentGen(runnerFScore, ghostFScore, s);
+//            }
 
-            if((runnerFScore > this.highestRunnerFitnessScore && runnerVictory) || first){
+            if((fScore > this.highestRunnerFitnessScore + this.highestGhostFitnessScore) || first){
                 this.highestRunnerFitnessScore = runnerFScore;
-                logCurrentBestSpecimen(runnerFScore, ghostFScore, s);
+                this.highestGhostFitnessScore = ghostFScore;
+                this.bestSpecimen = s;
             }
 
-            if ((ghostFScore > this.highestGhostFitnessScore && ghostVictory) || first) {
-                this.highestGhostFitnessScore = ghostFScore;
-                logCurrentBestSpecimen(runnerFScore, ghostFScore, s);
-            }
+//            if ((ghostFScore > this.highestGhostFitnessScore && ghostVictory) || first) {
+//                this.highestGhostFitnessScore = ghostFScore;
+//                logCurrentBestSpecimen(runnerFScore, ghostFScore, s);
+//            }
 
             if(first){
                 this.first = false;
@@ -130,9 +139,23 @@ public class Population {
                     this.previousHighestRunnerFitnessScore = this.highestRunnerFitnessScore;
                     this.count = 0;
                 }
-                this.logger.addGenome(new GenomePair(this.bestRunnerInCurrentGen.getGenome(), this.bestGhostInCurrentGen.getGenome(), this.genNum, this.bestRunnerFScoreInCurrentGen, this.bestGhostFScoreInCurrentGen));
+
+                double avrgRunnerScore = calculateAvrgScore(runnerScoreList);
+                double avrgGhostScore = calculateAvrgScore(ghostScoreList);
+
+                logCurrentBestSpecimen(this.highestRunnerFitnessScore, this.highestGhostFitnessScore, avrgRunnerScore, avrgGhostScore, this.bestSpecimen);
+                this.logger.addGenome(new GenomePair(this.bestRunnerInCurrentGen.getGenome(), this.bestGhostInCurrentGen.getGenome(), this.genNum,
+                        this.bestRunnerFScoreInCurrentGen, this.bestGhostFScoreInCurrentGen, avrgRunnerScore, avrgGhostScore));
             }
         }
+    }
+
+    private double calculateAvrgScore(ArrayList<Double> scoreList) {
+        double result = 0;
+        for(Double d: scoreList){
+           result += d;
+        }
+        return result/scoreList.size();
     }
 
     private void setBestSpecimenInCurrentGen(double runnerFScore, double ghostFScore, Specimen s) {
@@ -143,8 +166,8 @@ public class Population {
         this.bestGhostInCurrentGen = s.getGhost();
     }
 
-    private void logCurrentBestSpecimen(double runnerFScore, double ghostFScore, Specimen s) {
-            this.bestGenomePair = new GenomePair(s.getRunner().getGenome(), s.getGhost().getGenome(), this.genNum, runnerFScore, ghostFScore);
+    private void logCurrentBestSpecimen(double runnerFScore, double ghostFScore, double avrgRunnerFScore, double avrgGhostFScore, Specimen s) {
+            this.bestGenomePair = new GenomePair(s.getRunner().getGenome(), s.getGhost().getGenome(), this.genNum, runnerFScore, ghostFScore, avrgRunnerFScore, avrgGhostFScore);
             this.logger.setBestGenomePair(this.bestGenomePair);
     }
 
@@ -157,8 +180,8 @@ public class Population {
             boolean firstDeath = true;
             for (int i = 0; i < this.genomeSize; i++) {
                 if(firstDeath) {
-                    double tmpDcrScore = ((double) (this.genomeSize - i) / (double) this.genomeSize) * 100.0;
-                    double tmpIncScore = ((double) i / (double) this.genomeSize) * 100.0;
+                    double tmpDcrScore = ((double) (this.genomeSize - i) / (double) this.genomeSize) * 2.0;
+                    double tmpIncScore = ((double) i / (double) this.genomeSize) * 2.0;
                     int oldFoodState = runner.getFoodEaten();
                     double oldXPosState = Math.pow(runner.getX() - ghost.getX(), 2.0);
                     double oldYPosState = Math.pow(runner.getY() - ghost.getY(), 2.0);
@@ -171,15 +194,18 @@ public class Population {
                     if (runner.getFoodEaten() <= oldFoodState) {
                         runnerFScore -= Math.pow(tmpDcrScore, 6);
                     }
+//                    if(absNewPos < 10){
+//                        runnerFScore -= Math.pow(tmpDcrScore, 100);
+//                    }
                     if (absNewPos >= absOldPos) {
                         ghostFScore -= Math.pow(tmpDcrScore, 6);
                     }
                     if (!runner.isAlive()) {
-                        //runnerFScore -= Math.pow(tmpDcrScore, 10);
+                        runnerFScore -= Math.pow(tmpDcrScore, 100);
                         //ghostFScore += Math.pow(tmpDcrScore, 10);
                         //ghostFScore += Math.pow(tmpIncScore, 6);
                         //runnerFScore -= Math.pow(tmpDcrScore, 6);
-                        runnerFScore = Double.NEGATIVE_INFINITY;
+                        //runnerFScore = Double.NEGATIVE_INFINITY;
                         firstDeath = false;
                     }
                 }

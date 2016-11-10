@@ -8,6 +8,8 @@ import GA.World.Map.Map;
 import org.lwjgl.input.Mouse;
 import org.newdawn.slick.opengl.Texture;
 
+import javax.swing.*;
+
 import static GA.Gfx.Helper.Artist.drawRectTexture;
 import static GA.Gfx.Helper.Artist.quickLoadTexture;
 
@@ -36,9 +38,11 @@ class Init implements State {
     private void updateButtons() {
         if (this.menuHUD.isButtonClicked("start")) {
             this.stateManager.changeToSpectatingState();
+            Window.changeToSpectate();
         }
         if (this.menuHUD.isButtonClicked("map editor")) {
             this.stateManager.changeToMapEditState();
+            Window.changeToMapEditor();
         }
         if (this.menuHUD.isButtonClicked("exit")) {
             System.exit(0);

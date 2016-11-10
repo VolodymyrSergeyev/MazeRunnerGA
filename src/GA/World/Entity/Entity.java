@@ -36,6 +36,7 @@ public abstract class Entity {
 
     private boolean isRendered;
     private int failedMovesMade;
+    private int speed = 10;
 
     Entity(int genomeSize, Map map, Class clas, boolean isRendered){
         this.clas = clas;
@@ -89,7 +90,7 @@ public abstract class Entity {
 
     public void update(){
         this.tick++;
-        if(this.tick == 5){
+        if(this.tick >= this.speed){
             if(this.currentGene < this.genomeSize && !stoped) {
                 moveByGenomeId(this.currentGene);
                 this.currentGene++;
@@ -273,5 +274,9 @@ public abstract class Entity {
 
     boolean isRendered() {
         return isRendered;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
     }
 }
