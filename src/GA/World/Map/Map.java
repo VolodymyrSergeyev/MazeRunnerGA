@@ -94,7 +94,7 @@ public class Map {
         this.frameWidth = Window.getWIDTH();
         this.frameHeight = Window.getHEIGHT();
         this.SCALE = Window.getSCALE();
-        this.map = (Tile[][]) map.clone();
+        this.map = map.clone();
         int count = 0;
         for(Tile[] tiles : map){
             for (Tile t: tiles){
@@ -121,10 +121,6 @@ public class Map {
         if(initRender){
             tile.initTexture();
         }
-    }
-
-    public void setUnbuildable(int xCoord, int yCoord) {
-        map[xCoord][yCoord].setBuildable(false);
     }
 
     public Tile getTile(int xPos, int yPos) {
@@ -155,40 +151,20 @@ public class Map {
         return mapWidth;
     }
 
-    public void setMapWidth(int mapWidth) {
-        this.mapWidth = mapWidth;
-    }
-
     public int getMapHeight() {
         return mapHeight;
-    }
-
-    public void setMapHeight(int mapHeight) {
-        this.mapHeight = mapHeight;
     }
 
     public int getBlockSize() {
         return blockSize;
     }
 
-    public void setBlockSize(int blockSize) {
-        this.blockSize = blockSize;
-    }
-
-    public int getFrameWidth() {
+    private int getFrameWidth() {
         return frameWidth;
-    }
-
-    public void setFrameWidth(int frameWidth) {
-        this.frameWidth = frameWidth;
     }
 
     public int getFrameHeight() {
         return frameHeight;
-    }
-
-    public void setFrameHeight(int frameHeight) {
-        this.frameHeight = frameHeight;
     }
 
     public Tile[][] getMap() {
@@ -207,7 +183,7 @@ public class Map {
         return runnerSpawn;
     }
 
-    public void setRunnerSpawn(Tile runnerSpawn) {
+    void setRunnerSpawn(Tile runnerSpawn) {
         this.runnerSpawn = runnerSpawn;
     }
 
@@ -215,7 +191,7 @@ public class Map {
         return ghostSpawn;
     }
 
-    public void setGhostSpawn(Tile ghostSpawn){
+    void setGhostSpawn(Tile ghostSpawn){
         this.ghostSpawn = ghostSpawn;
     }
 
@@ -239,11 +215,11 @@ public class Map {
         return maxFood;
     }
 
-    public void setMaxFood(int maxFood) {
+    void setMaxFood(int maxFood) {
         this.maxFood = maxFood;
     }
 
-    public Tile[][] getMapClone(Tile[][] map) {
+    private Tile[][] getMapClone(Tile[][] map) {
         Tile[][] mapClone = new Tile[this.mapWidth][this.mapHeight];
         for(int x =0; x < this.mapWidth; x++){
             for(int y = 0; y < this.mapHeight; y++){

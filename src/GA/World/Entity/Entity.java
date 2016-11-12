@@ -26,7 +26,6 @@ public abstract class Entity {
 
     private ArrayList<Integer> genome;
     private int genomeSize;
-    private int movesMade;
 
     private int tick = 0;
     private int currentGene = 0;
@@ -59,7 +58,6 @@ public abstract class Entity {
         this.angle = 0;
         this.isAlive = true;
         this.stoped = false;
-        this.movesMade = 0;
         this.failedMovesMade = 0;
     }
 
@@ -84,7 +82,6 @@ public abstract class Entity {
         this.angle = 0;
         this.isAlive = true;
         this.stoped = false;
-        this.movesMade = 0;
         this.failedMovesMade = 0;
     }
 
@@ -141,7 +138,6 @@ public abstract class Entity {
         if(isAlive && !stoped) {
             Tile futureTile = this.map.getTile(modXCord, modYCord);
             if (futureTile.isWalkable()) {
-                this.movesMade++;
                 this.yCord = modYCord;
                 this.xCord = modXCord;
             } else {
@@ -158,10 +154,6 @@ public abstract class Entity {
         }else {
             this.map.setCurrentGhostTile(this.currentTile);
         }
-    }
-
-    public int getFailedMovesMade(){
-        return this.failedMovesMade;
     }
 
     public void moveByGenomeId(int geneId){
@@ -230,18 +222,6 @@ public abstract class Entity {
         return genome;
     }
 
-    public void setGenome(ArrayList<Integer> genome) {
-        this.genome = genome;
-    }
-
-    public int getGenomeSize(){
-        return this.genome.size();
-    }
-
-    public int getMovesMade() {
-        return movesMade;
-    }
-
     void setTexture(Texture texture) {
         this.texture = texture;
     }
@@ -249,9 +229,12 @@ public abstract class Entity {
     public void resetWithNewGenome(ArrayList<Integer> genome){
         this.genome = genome;
         this.genomeSize = genome.size();
-        this.currentGene = 0;
+        reset();
         returnToStartPos();
-        this.movesMade = 0;
+    }
+
+    private void reset() {
+        this.currentGene = 0;
         this.failedMovesMade = 0;
         this.isAlive = true;
         this.stoped = false;
@@ -278,5 +261,11 @@ public abstract class Entity {
 
     public void setSpeed(int speed) {
         this.speed = speed;
+    }
+
+    public void resetWithNewMap(Map map) {
+        this.map = map;
+        reset();
+        returnToStartPos();
     }
 }

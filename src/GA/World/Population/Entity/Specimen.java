@@ -7,12 +7,17 @@ import GA.World.Entity.SpookyGhost;
 public class Specimen {
     private double runnerFScore;
     private double ghostFScore;
+    private double reTestRunnerFScore;
+    private double reTestGhostFScore;
     private MazeRunner runner;
     private SpookyGhost ghost;
+    private MazeRunner reTestRunner;
+    private SpookyGhost reTestGhost;
     private boolean tested;
     private boolean runnerIsAWinner;
+    private boolean setForReTest = false;
 
-    public Specimen(MazeRunner runner, SpookyGhost ghost, float runnerFScore, float ghostFScore){
+    public Specimen(MazeRunner runner, SpookyGhost ghost, double runnerFScore, double ghostFScore){
         this.tested = false;
         this.runner = runner;
         this.ghost = ghost;
@@ -57,5 +62,45 @@ public class Specimen {
 
     public void setRunnerIsAWinner(boolean runnerIsAWinner) {
         this.runnerIsAWinner = runnerIsAWinner;
+    }
+
+    public boolean isSetForReTest() {
+        return setForReTest;
+    }
+
+    public void setForReTest(boolean setForReTest) {
+        this.setForReTest = setForReTest;
+    }
+
+    public void setReTestGhost(SpookyGhost reTestGhost) {
+        this.reTestGhost = reTestGhost;
+    }
+
+    public void setReTestRunner(MazeRunner reTestRunner) {
+        this.reTestRunner = reTestRunner;
+    }
+
+    public MazeRunner getReTestRunner() {
+        return reTestRunner;
+    }
+
+    public SpookyGhost getReTestGhost() {
+        return reTestGhost;
+    }
+
+    public double getReTestRunnerFScore() {
+        return reTestRunnerFScore;
+    }
+
+    public void setReTestRunnerFScore(double reTestRunnerFScore) {
+        this.reTestRunnerFScore = reTestRunnerFScore;
+    }
+
+    public double getReTestGhostFScore() {
+        return reTestGhostFScore;
+    }
+
+    public void setReTestGhostFScore(double reTestGhostFScore) {
+        this.reTestGhostFScore = reTestGhostFScore;
     }
 }

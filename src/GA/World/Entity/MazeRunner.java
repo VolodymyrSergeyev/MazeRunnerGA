@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import static GA.Gfx.Helper.Artist.quickLoadTexture;
 
 public class MazeRunner extends Entity {
-
-    private int genomeSize;
     private Map map;
 
     private int foodEaten;
@@ -22,7 +20,6 @@ public class MazeRunner extends Entity {
         if(isRendered){
             initTexture();
         }
-        this.genomeSize = genomeSize;
         this.map = map;
         this.foodEaten = 0;
         this.changedTiles = new ArrayList<>();
@@ -34,7 +31,6 @@ public class MazeRunner extends Entity {
         if(isRendered){
             initTexture();
         }
-        this.genomeSize = genome.size();
         this.map = map;
         this.foodEaten = 0;
         this.changedTiles = new ArrayList<>();
@@ -114,5 +110,14 @@ public class MazeRunner extends Entity {
         super.resetWithNewGenome(genome);
         this.currentTile = super.getCurrentTile();
         revertChangedTiles();
+    }
+
+    @Override
+    public void resetWithNewMap(Map map) {
+        super.resetWithNewMap(map);
+        this.map = map;
+        this.currentTile = super.getCurrentTile();
+        this.changedTiles = new ArrayList<>();
+        this.foodEaten = 0;
     }
 }

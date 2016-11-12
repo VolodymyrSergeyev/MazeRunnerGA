@@ -5,10 +5,7 @@ import GA.Gfx.HUD;
 import GA.Gfx.Window;
 import GA.World.Logger.Logger;
 import GA.World.Map.Map;
-import org.lwjgl.input.Mouse;
 import org.newdawn.slick.opengl.Texture;
-
-import javax.swing.*;
 
 import static GA.Gfx.Helper.Artist.drawRectTexture;
 import static GA.Gfx.Helper.Artist.quickLoadTexture;

@@ -14,11 +14,9 @@ import static org.lwjgl.opengl.GL11.*;
 
 public final class Window extends JFrame {
 
-    private static String title;
     public static int WIDTH;
     public static int HEIGHT;
     public static float SCALE;
-    private static Canvas scene;
     private static JPanel spectating;
     private static JPanel mapeditor;
     private static JPanel cards;
@@ -26,11 +24,10 @@ public final class Window extends JFrame {
     private static final String INIT_ID = "init";
 
     public Window(int width, int height, String title, float scale) {
-        Window.title = title;
         SCALE = scale;
         WIDTH = (int)(width * scale);
         HEIGHT = (int)(height * scale);
-        scene = new Canvas();
+        Canvas scene = new Canvas();
         scene.setFocusable(true);
         spectating = new JPanel();
         mapeditor = new JPanel();
@@ -39,8 +36,8 @@ public final class Window extends JFrame {
         mapeditor.setFocusable(false);
         cards.setFocusable(false);
         cards.setEnabled(true);
-        Dimension s = new Dimension(WIDTH + 100, HEIGHT);
-        Dimension c =new Dimension(WIDTH + 100, 80);
+        Dimension s = new Dimension(WIDTH, HEIGHT);
+        Dimension c =new Dimension(WIDTH, 80);
         cards.setPreferredSize(c);
         JPanel init = new JPanel();
         init.setPreferredSize(c);
@@ -50,7 +47,7 @@ public final class Window extends JFrame {
         scene.setPreferredSize(s);
         scene.setMaximumSize(s);
         scene.setMinimumSize(s);
-        Dimension d = new Dimension(WIDTH + 100, HEIGHT + 100);
+        Dimension d = new Dimension(WIDTH, HEIGHT + 100);
         this.setMaximumSize(d);
         this.setMinimumSize(d);
         this.setPreferredSize(d);

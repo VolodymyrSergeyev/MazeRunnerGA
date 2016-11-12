@@ -32,12 +32,4 @@ public class Logger {
     public void setBestGenomePair(GenomePair bestGenomePair) {
         this.bestGenomePair = bestGenomePair;
     }
-
-    public GenomePair getDebugGenomePair() {
-        return this.debugGenomePair;
-    }
-
-    public void setDebugGenomePair(GenomePair genomePair){
-        this.debugGenomePair = genomePair;
-    }
 }

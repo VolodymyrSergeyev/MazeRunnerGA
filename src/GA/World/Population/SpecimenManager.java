@@ -29,24 +29,24 @@ class SpecimenManager {
     }
 
     void addSpecimen(Specimen specimen) {
-        if(!specimen.isTested()){
+        if (!specimen.isTested()) {
             addToGeneralSpecimens(specimen);
-        }else {
-            if (this.topBestRunnerSpecimens.size() < this.numberOfBestSpecimens) {
+        } else {
+            if (this.topBestRunnerSpecimens.size() < this.numberOfBestSpecimens && specimen.getRunner() != null) {
                 addRunnerBestSpecimen(specimen, 0, true, true);
-            }
-            if(this.topBestGhostSpecimens.size() < this.numberOfBestSpecimens){
+            } else if (this.topBestGhostSpecimens.size() < this.numberOfBestSpecimens && specimen.getGhost() != null) {
                 addRunnerBestSpecimen(specimen, 0, true, false);
-            }
-            this.lowestfScoreInTheRunnerTop = this.topBestRunnerSpecimens.get(this.topBestRunnerSpecimens.size()-1).getRunnerFScore();
-            this.lowestfScoreInTheGhostTop = this.topBestGhostSpecimens.get(this.topBestGhostSpecimens.size()-1).getGhostFScore();
+            } else {
+                this.lowestfScoreInTheRunnerTop = this.topBestRunnerSpecimens.get(this.topBestRunnerSpecimens.size() - 1).getRunnerFScore();
+                this.lowestfScoreInTheGhostTop = this.topBestGhostSpecimens.get(this.topBestGhostSpecimens.size() - 1).getGhostFScore();
 
-            if(specimen.getRunnerFScore() > this.lowestfScoreInTheRunnerTop) {
-                findSpotInTheTop(specimen, true);
-            }
+                if (specimen.getRunnerFScore() > this.lowestfScoreInTheRunnerTop && specimen.getRunner() != null) {
+                    findSpotInTheTop(specimen, true);
+                }
 
-            if (specimen.getGhostFScore() > this.lowestfScoreInTheGhostTop){
-                findSpotInTheTop(specimen, false);
+                if (specimen.getGhostFScore() > this.lowestfScoreInTheGhostTop && specimen.getGhost() != null) {
+                    findSpotInTheTop(specimen, false);
+                }
             }
         }
     }
@@ -54,7 +54,7 @@ class SpecimenManager {
     private void findSpotInTheTop(Specimen specimen, boolean runner) {
         boolean added = false;
         int r = 0;
-        if(runner) {
+        if (runner) {
             ArrayList<Specimen> s1 = this.topBestRunnerSpecimens;
 
             for (int i = 0; i < s1.size(); i++) {
@@ -69,7 +69,7 @@ class SpecimenManager {
                     addRunnerBestSpecimen(specimen, r, false, true);
                 }
             }
-        }else {
+        } else {
             ArrayList<Specimen> s2 = this.topBestGhostSpecimens;
             for (int i = 0; i < s2.size(); i++) {
                 if (s2.get(i).getGhost().getGenome().equals(specimen.getGhost().getGenome())) {
@@ -93,11 +93,13 @@ class SpecimenManager {
     private void addRunnerBestSpecimen(Specimen specimen, int rank, boolean first, boolean runner) {
         List<Specimen> tmp;
         boolean added = false;
-        if(runner) {
+        if (runner) {
             if (rank > 0 || !first) {
                 tmp = this.topBestRunnerSpecimens.subList(rank, this.topBestRunnerSpecimens.size());
                 this.topBestRunnerSpecimens = new ArrayList<>(this.topBestRunnerSpecimens.subList(0, rank));
-                this.topBestRunnerSpecimens.add(specimen);
+                Specimen tmpS = new Specimen(specimen.getRunner(), null, specimen.getRunnerFScore(), Double.NaN);
+                tmpS.setTested();
+                this.topBestRunnerSpecimens.add(tmpS);
                 if (this.topBestRunnerSpecimens.size() + tmp.size() > this.numberOfBestSpecimens) {
                     tmp.remove(tmp.size() - 1);
                 }
@@ -118,14 +120,18 @@ class SpecimenManager {
                     }
                 }
                 if (!added) {
-                    this.topBestRunnerSpecimens.add(specimen);
+                    Specimen tmpS = new Specimen(specimen.getRunner(), null, specimen.getRunnerFScore(), Double.NaN);
+                    tmpS.setTested();
+                    this.topBestRunnerSpecimens.add(tmpS);
                 }
             }
-        }else {
+        } else {
             if (rank > 0 || !first) {
                 tmp = this.topBestGhostSpecimens.subList(rank, this.topBestGhostSpecimens.size());
                 this.topBestGhostSpecimens = new ArrayList<>(this.topBestGhostSpecimens.subList(0, rank));
-                this.topBestGhostSpecimens.add(specimen);
+                Specimen tmpS = new Specimen(null, specimen.getGhost(), Double.NaN, specimen.getGhostFScore());
+                tmpS.setTested();
+                this.topBestGhostSpecimens.add(tmpS);
                 if (this.topBestGhostSpecimens.size() + tmp.size() > this.numberOfBestSpecimens) {
                     tmp.remove(tmp.size() - 1);
                 }
@@ -146,7 +152,9 @@ class SpecimenManager {
                     }
                 }
                 if (!added) {
-                    this.topBestGhostSpecimens.add(specimen);
+                    Specimen tmpS = new Specimen(null, specimen.getGhost(), Double.NaN, specimen.getGhostFScore());
+                    tmpS.setTested();
+                    this.topBestGhostSpecimens.add(tmpS);
                 }
             }
         }
@@ -156,29 +164,26 @@ class SpecimenManager {
         return topBestRunnerSpecimens;
     }
 
-    public void setTopBestRunnerSpecimens(ArrayList<Specimen> topBestRunnerSpecimens) {
-        this.topBestRunnerSpecimens = topBestRunnerSpecimens;
-    }
-
     ArrayList<Specimen> getGeneralListOfSpecimens() {
         return generalListOfSpecimens;
-    }
-
-    public void setGeneralListOfSpecimens(ArrayList<Specimen> generalListOfSpecimens) {
-        this.generalListOfSpecimens = generalListOfSpecimens;
     }
 
     ArrayList<Specimen> getTopBestGhostSpecimens() {
         return topBestGhostSpecimens;
     }
 
-    public void setTopBestGhostSpecimens(ArrayList<Specimen> topBestGhostSpecimens) {
-        this.topBestGhostSpecimens = topBestGhostSpecimens;
-    }
-
     void removeWeakSpecimens() {
         this.generalListOfSpecimens = new ArrayList<>();
         this.generalListOfSpecimens.addAll(this.topBestRunnerSpecimens);
         this.generalListOfSpecimens.addAll(this.topBestGhostSpecimens);
+    }
+
+    int getNumberOfBestSpecimens() {
+        return numberOfBestSpecimens;
+    }
+
+    void clearTops() {
+        this.topBestGhostSpecimens = new ArrayList<>();
+        this.topBestRunnerSpecimens = new ArrayList<>();
     }
 }

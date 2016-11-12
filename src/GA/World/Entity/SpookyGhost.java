@@ -1,7 +1,6 @@
 package GA.World.Entity;
 
 import GA.World.Map.Element.Tile;
-import GA.World.Map.Element.TileType;
 import GA.World.Map.Map;
 
 import java.util.ArrayList;
@@ -10,7 +9,6 @@ import static GA.Gfx.Helper.Artist.quickLoadTexture;
 
 public class SpookyGhost extends Entity {
 
-    private int genomeSize;
     private Map map;
     private Tile currentTile;
 
@@ -19,7 +17,6 @@ public class SpookyGhost extends Entity {
         if(isRendered){
             initTexture();
         }
-        this.genomeSize = genomeSize;
         this.map = map;
         this.currentTile = super.getCurrentTile();
     }
@@ -29,7 +26,6 @@ public class SpookyGhost extends Entity {
         if(isRendered){
             initTexture();
         }
-        this.genomeSize = genome.size();
         this.map = map;
         this.currentTile = super.getCurrentTile();
     }
@@ -77,6 +73,13 @@ public class SpookyGhost extends Entity {
     @Override
     public void resetWithNewGenome(ArrayList<Integer> genome) {
         super.resetWithNewGenome(genome);
+        this.currentTile = super.getCurrentTile();
+    }
+
+    @Override
+    public void resetWithNewMap(Map map) {
+        super.resetWithNewMap(map);
+        this.map = map;
         this.currentTile = super.getCurrentTile();
     }
 }

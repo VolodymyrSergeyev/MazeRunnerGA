@@ -9,18 +9,9 @@ import java.util.logging.Logger;
 
 public class MapManager {
 
-    public static final String MAIN_MAP = "mainMap.MAP";
-    public static final String DEFAULT_MAP = "defaultMap.MAP";
+    private static final String MAIN_MAP = "mainMap.MAP";
+    private static final String DEFAULT_MAP = "defaultMap.MAP";
     private static String DEFAULT_FILE_PATH = "res" + File.separator + "maps" + File.separator;
-    private static BufferedReader bufferedReader;
-
-    public static String getDEFAULT_FILE_PATH() {
-        return DEFAULT_FILE_PATH;
-    }
-
-    public static void setDEFAULT_FILE_PATH(String DEFAULT_FILE_PATH) {
-        MapManager.DEFAULT_FILE_PATH = DEFAULT_FILE_PATH;
-    }
 
     public static void saveMap(Map map) {
         String mapData = "";
@@ -58,7 +49,7 @@ public class MapManager {
         String line;
         int maxFood = 0;
         try {
-            bufferedReader = new BufferedReader(new FileReader(DEFAULT_FILE_PATH + mapName));
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(DEFAULT_FILE_PATH + mapName));
             while ( (line = bufferedReader.readLine()) != null){
                 data += line;
             }

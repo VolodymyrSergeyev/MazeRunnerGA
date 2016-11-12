@@ -6,14 +6,10 @@ import GA.World.Entity.SpookyGhost;
 import GA.World.Logger.Entity.GenomePair;
 import GA.World.Logger.Logger;
 import GA.World.Map.Map;
-import GA.World.Population.Population;
 import org.lwjgl.input.Keyboard;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -23,7 +19,6 @@ public class Spectating implements State {
     private final StateManager stateManager;
     private Map map;
     private Logger logger;
-    private Population population;
     private GenomePair bestGenomeInCurrentGen;
     private int currentGen = 0;
     private MazeRunner runner;
@@ -32,24 +27,12 @@ public class Spectating implements State {
     private JPanel panel;
     public static final String SPECTATING_ID = "Spectating";
 
-    private javax.swing.JButton jButton1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSlider jSlider1;
+    private JLabel jLabel10;
+    private JLabel jLabel13;
+    private JLabel jLabel2;
+    private JLabel jLabel4;
+    private JLabel jLabel6;
+    private JLabel jLabel9;
     private javax.swing.JTextField jTextPane1;
 
     private int changeCount = 0;
@@ -75,25 +58,25 @@ public class Spectating implements State {
 
     private void initializePanel() {
 
-        jPanel1 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        JPanel jPanel1 = new JPanel();
+        JScrollPane jScrollPane1 = new JScrollPane();
         jTextPane1 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
-        jSlider1 = new javax.swing.JSlider(10,60,50);
-        jLabel14 = new javax.swing.JLabel();
+        JButton jButton1 = new JButton();
+        JLabel jLabel1 = new JLabel();
+        jLabel2 = new JLabel();
+        JLabel jLabel3 = new JLabel();
+        jLabel4 = new JLabel();
+        JLabel jLabel5 = new JLabel();
+        jLabel6 = new JLabel();
+        JLabel jLabel7 = new JLabel();
+        JLabel jLabel8 = new JLabel();
+        jLabel9 = new JLabel();
+        jLabel10 = new JLabel();
+        JLabel jLabel11 = new JLabel();
+        JLabel jLabel12 = new JLabel();
+        jLabel13 = new JLabel();
+        JSlider jSlider1 = new JSlider(10, 60, 50);
+        JLabel jLabel14 = new JLabel();
 
         panel.setPreferredSize(new Dimension(Window.WIDTH, 80));
 
@@ -187,7 +170,7 @@ public class Spectating implements State {
                                         .addGroup(jPanel1Layout.createSequentialGroup()
                                                 .addComponent(jLabel11)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 180, 180)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -365,7 +348,6 @@ public class Spectating implements State {
         this.currentGen = genome.getGeneration() - 1;
         this.runner.resetWithNewGenome(genome.getRunnerGenome());
         this.ghost.resetWithNewGenome(genome.getGhostGenome());
-        System.out.println("Current max gen: " + this.logger.getNumberOfGenerations() + "   GenomePair Gen : " + genome.getGeneration() + "     Runner Fitness score : " + genome.getBestRunnerFScore() + "     Ghost Fitness score : " + genome.getBestGhostFScore());
     }
 
     @Override
