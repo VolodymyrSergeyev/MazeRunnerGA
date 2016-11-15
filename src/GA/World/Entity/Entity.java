@@ -51,6 +51,11 @@ public abstract class Entity {
         }
         if(this.currentTile == null){
             this.currentTile = getRandomSpawn();
+            if(this.clas == MazeRunner.class){
+                this.map.setCurrentRunnerTile(this.currentTile);
+            }else if (this.clas == SpookyGhost.class){
+                this.map.setCurrentGhostTile(this.currentTile);
+            }
         }
         this.mapBlockSize = this.map.getBlockSize();
         this.xCord = (int) this.currentTile.getX();
@@ -75,6 +80,11 @@ public abstract class Entity {
         }
         if(this.currentTile == null){
             this.currentTile = getRandomSpawn();
+            if(this.clas == MazeRunner.class){
+                this.map.setCurrentRunnerTile(this.currentTile);
+            }else if (this.clas == SpookyGhost.class){
+                this.map.setCurrentGhostTile(this.currentTile);
+            }
         }
         this.mapBlockSize = this.map.getBlockSize();
         this.xCord = (int) this.currentTile.getX();
@@ -180,7 +190,7 @@ public abstract class Entity {
         int ranX = r.nextInt(this.map.getMapWidth() - 1) + 1;
         int ranY = r.nextInt(this.map.getMapHeight() - 1) + 1;
         Tile ranTile = this.map.getTile(ranX, ranY);
-        if (ranTile.getType() == TileType.Floor) {
+        if (ranTile.getType() == TileType.Floor || ranTile.getType() == TileType.Food) {
             return ranTile;
         }
         return getRandomSpawn();

@@ -7,9 +7,9 @@ import GA.State.StateManager;
 public class Core {
     private Window window;
     private StateManager sm;
-    private boolean isRunning;
-    public Core(){
-        this.window = new Window(600, 600, "Maze Runner GA", 1.4f);
+    public static boolean isRunning;
+    public Core(int width, int height, float scale){
+        this.window = new Window(width, height, "Maze Runner GA", scale);
         this.sm = new StateManager();
         this.isRunning = false;
     }
@@ -24,5 +24,6 @@ public class Core {
         }
         Display.destroy();
         this.sm.popManager.interrupt();
+        System.exit(0);
     }
 }

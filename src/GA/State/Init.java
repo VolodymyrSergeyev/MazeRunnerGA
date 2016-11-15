@@ -1,10 +1,12 @@
 package GA.State;
 
 
+import GA.Core;
 import GA.Gfx.HUD;
 import GA.Gfx.Window;
 import GA.World.Logger.Logger;
 import GA.World.Map.Map;
+import org.lwjgl.opengl.Display;
 import org.newdawn.slick.opengl.Texture;
 
 import static GA.Gfx.Helper.Artist.drawRectTexture;
@@ -42,7 +44,7 @@ class Init implements State {
             Window.changeToMapEditor();
         }
         if (this.menuHUD.isButtonClicked("exit")) {
-            System.exit(0);
+            Core.isRunning = false;
         }
     }
 

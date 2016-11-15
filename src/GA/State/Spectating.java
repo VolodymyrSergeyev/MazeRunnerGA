@@ -90,8 +90,7 @@ public class Spectating implements State {
 
         jScrollPane1.setViewportView(jTextPane1);
 
-        jPanel1.setToolTipText(" You can use Left and Right arrows to change generations." +
-                " Or press 'b' key to go to the current best generation.");
+        jPanel1.setToolTipText("You can use Left and Right arrows to change generations.");
 
         jButton1.setText("Go");
         jButton1.setToolTipText("Click this button to change the current generation number to the one provided in the text field.");
@@ -284,9 +283,6 @@ public class Spectating implements State {
             if (Keyboard.getEventKey() == Keyboard.KEY_LEFT && Keyboard.getEventKeyState()) {
                 this.changeCurrentGeneration(false);
             }
-            if (Keyboard.getEventKey() == Keyboard.KEY_B && Keyboard.getEventKeyState()) {
-                this.changeCurrentGenerationToBestGenome();
-            }
 
 //            if (Keyboard.getEventKey() == Keyboard.KEY_D && Keyboard.getEventKeyState()) {
 //                GenomePair genome = this.logger.getDebugGenomePair();
@@ -317,10 +313,6 @@ public class Spectating implements State {
         this.jLabel10.setText(""+round(this.bestGenomeInCurrentGen.getBestRunnerFScore(), 4));
         this.jLabel6.setText(""+(this.currentGen + 1));
         this.jLabel13.setText(""+this.logger.getNumberOfGenerations());
-    }
-
-    private void changeCurrentGenerationToBestGenome() {
-        applyGenomeToRenderedRunner(this.logger.getBestGenomePair());
     }
 
     private void changeCurrentGeneration(boolean b) {

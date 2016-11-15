@@ -54,6 +54,7 @@ public class MapManager {
                 data += line;
             }
         } catch (Exception e) {
+            e.printStackTrace();
             if (first) {
                 loadDefaultMap();
             } else {
