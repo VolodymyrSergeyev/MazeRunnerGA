@@ -1,34 +1,35 @@
 package GA.World.Logger;
 
-import GA.World.Logger.Entity.Genome;
+import GA.World.Logger.Entity.GenomePair;
 
 import java.util.ArrayList;
 
 public class Logger {
-    private ArrayList<Genome> genomeList;
-    private Genome bestGenome;
+    private ArrayList<GenomePair> genomePairList;
+    private GenomePair bestGenomePair;
+    private GenomePair debugGenomePair;
 
     public Logger(){
-        this.genomeList = new ArrayList<>();
+        this.genomePairList = new ArrayList<>();
     }
 
-    public void addGenome(Genome genome){
-        this.genomeList.add(genome);
+    public void addGenome(GenomePair genomePair){
+        this.genomePairList.add(genomePair);
     }
 
-    public Genome getGenomeByGenerationNumer(int genNumb){
-        return this.genomeList.get(genNumb);
+    public GenomePair getGenomeByGenerationNumer(int genNumb){
+        return this.genomePairList.get(genNumb);
     }
 
     public int getNumberOfGenerations(){
-        return this.genomeList.size();
+        return this.genomePairList.size();
     }
 
-    public Genome getBestGenome() {
-        return bestGenome;
+    public GenomePair getBestGenomePair() {
+        return bestGenomePair;
     }
 
-    public void setBestGenome(Genome bestGenome) {
-        this.bestGenome = bestGenome;
+    public void setBestGenomePair(GenomePair bestGenomePair) {
+        this.bestGenomePair = bestGenomePair;
     }
 }

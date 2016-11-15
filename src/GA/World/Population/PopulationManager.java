@@ -1,7 +1,5 @@
 package GA.World.Population;
 
-import java.io.File;
-
 public class PopulationManager implements Runnable {
 
     private Population population;
@@ -12,17 +10,18 @@ public class PopulationManager implements Runnable {
 
     @Override
     public void run() {
-        System.gc();
-        if(this.population.isInfinite()){
-            while (!this.population.goalAchieved()){
-                population.natural_selection();
+        if(!Thread.currentThread().isInterrupted()) {
+            if (this.population.getNumOfGenerations() == 0) {
+                while (!this.population.goalAchieved() && !this.population.isEndded() && !Thread.currentThread().isInterrupted()) {
+                    population.naturalSelection();
+                }
+            } else {
+                for (int i = 0; i < population.getNumOfGenerations(); i++) {
+                    population.naturalSelection();
+                }
             }
-        }else {
-            for (int i = 0; i < population.getPopulationSize(); i++) {
-                population.natural_selection();
-            }
+            this.population.logger.setBestGenomePair(this.population.getBestGenomePair());
         }
-        this.population.logger.setBestGenome(this.population.getBestRunnerGenome());
     }
 
 }

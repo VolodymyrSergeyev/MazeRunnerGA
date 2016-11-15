@@ -3,11 +3,11 @@ package GA.State;
 import GA.World.Logger.Logger;
 import GA.World.Map.Map;
 
-public interface State {
+interface State {
     
-    public void init(Logger logger, Map map);
+    void init(Logger logger, Map map);
 
-    public void update();
+    void update();
 
-    public boolean isInitialized();
+    boolean isInitialized();
 }

@@ -5,11 +5,11 @@ import org.lwjgl.opengl.Display;
 import GA.State.StateManager;
 
 public class Core {
-    Window window;
-    StateManager sm;
-    boolean isRunning;
-    public Core(){
-        this.window = new Window(800, 600, "Maze Runner GA", 1);
+    private Window window;
+    private StateManager sm;
+    public static boolean isRunning;
+    public Core(int width, int height, float scale){
+        this.window = new Window(width, height, "Maze Runner GA", scale);
         this.sm = new StateManager();
         this.isRunning = false;
     }
@@ -23,5 +23,7 @@ public class Core {
             Display.sync(60);
         }
         Display.destroy();
+        this.sm.popManager.interrupt();
+        System.exit(0);
     }
 }

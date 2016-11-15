@@ -28,7 +28,6 @@ public enum TileType {
     }
 
     public static TileType extractTileType(String id) {
-        TileType type = TileType.Wall;
 
         for (TileType t1 : TileType.values()) {
             if (t1.getId().equals(id)) {
@@ -36,30 +35,18 @@ public enum TileType {
             }
         }
 
-        return type;
+        return TileType.Wall;
     }
 
     public String getTextureName() {
         return textureName;
     }
 
-    public void setTextureName(String textureName) {
-        this.textureName = textureName;
-    }
-
     public boolean isWalkable() {
         return walkable;
     }
 
-    public void setWalkable(boolean walkable) {
-        this.walkable = walkable;
-    }
-
     public String getId() {
         return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 }
